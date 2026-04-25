@@ -131,9 +131,9 @@ export const upsertScheduleSlot = mutation({
   },
 });
 export const getSchedule = query({
-  args: { ownerId: v.id("students") || v.id("tutors") || v.string() },
+  args: { ownerId: v.union(v.id("students"), v.id("tutors"), v.string()) },
   handler: async (ctx, args) => {
-    if (typeof args.ownerId === "string" && args.ownerId === "skip") return [];
+    if (args.ownerId === "skip") return [];
     return await ctx.db
       .query("schedules")
       .withIndex("by_owner", (q) => q.eq("ownerId", args.ownerId as any))

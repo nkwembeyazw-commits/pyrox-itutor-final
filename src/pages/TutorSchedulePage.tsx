@@ -41,8 +41,10 @@ export function TutorSchedulePage() {
   const [selectedTutorId, setSelectedTutorId] = useState<Id<"tutors"> | null>(null);
   const [isPrintingAll, setIsPrintingAll] = useState(false);
   const selectedTutor = tutors.find(t => t._id === selectedTutorId);
-  const queryArgs = selectedTutorId ? { ownerId: selectedTutorId } : 'skip';
-  const schedule = useQuery(api.pyrox.getSchedule, queryArgs === 'skip' ? 'skip' : queryArgs) ?? [];
+  const schedule = useQuery(
+    api.pyrox.getSchedule, 
+    selectedTutorId ? { ownerId: selectedTutorId } : "skip"
+  ) ?? [];
   const upsertSlot = useMutation(api.pyrox.upsertScheduleSlot);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeCell, setActiveCell] = useState<{ day: string; time: string } | null>(null);
