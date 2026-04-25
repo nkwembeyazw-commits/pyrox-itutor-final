@@ -4,27 +4,24 @@ import { api } from '@convex/_generated/api';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { DollarSign, CheckCircle, ArrowLeft, Printer, AlertTriangle } from "lucide-react";
-import { format, addDays } from "date-fns";
+import { format } from "date-fns";
 import { toast } from "sonner";
 import { Link } from 'react-router-dom';
+import { calculateNextDue, isOverdue } from '@/lib/utils';
 export function PaymentsDuesPage() {
-  const students = useQuery(api.pyrox.getStudents) ?? [];
+  const studentsRaw = useQuery(api.pyrox.getStudents);
   const markAsPaid = useMutation(api.pyrox.markStudentAsPaid);
-  const calculateNextDue = (lastPaid: number | undefined, interval: "weekly" | "monthly" | undefined, enrollmentDate: number) => {
-    const base = lastPaid || enrollmentDate;
-    const period = interval || "monthly";
-    return addDays(new Date(base), period === "weekly" ? 7 : 30).getTime();
-  };
   const studentsWithDueDates = useMemo(() => {
+    const students = studentsRaw ?? [];
     return students.map(s => {
       const nextDueDate = calculateNextDue(s.lastPaidDate, s.paymentInterval, s.createdAt);
       return {
         ...s,
         nextDueDate,
-        isOverdue: nextDueDate < Date.now(),
+        isOverdue: isOverdue(nextDueDate),
       };
     }).sort((a, b) => a.nextDueDate - b.nextDueDate);
-  }, [students]);
+  }, [studentsRaw]);
   const handleProcessPayment = async (id: any) => {
     try {
       await markAsPaid({ id });

@@ -88,7 +88,12 @@ export function TutorSchedulePage() {
   };
   const handleSave = async () => {
     if (!activeCell || !selectedTutorId) return;
+    // Safety Check: Verify student exists in current registry view
     const targetStudent = students.find(s => s._id === selectedStudentId);
+    if (selectedStudentId !== "none" && !targetStudent) {
+      toast.error("Learner reference is invalid or missing.");
+      return;
+    }
     try {
       await upsertSlot({
         ownerId: selectedTutorId,

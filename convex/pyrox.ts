@@ -50,13 +50,32 @@ export const markStudentAsPaid = mutation({
 export const deleteStudent = mutation({
   args: { id: v.id("students") },
   handler: async (ctx, args) => {
+    // 1. Delete the student record
     await ctx.db.delete(args.id);
+    // 2. Cascade delete schedule slots owned by this student
     const slots = await ctx.db
       .query("schedules")
       .withIndex("by_owner", (q) => q.eq("ownerId", args.id))
       .collect();
     for (const slot of slots) {
       await ctx.db.delete(slot._id);
+    }
+    // 3. Remove student from all Tutor rosters to maintain referential integrity
+    const tutors = await ctx.db.query("tutors").collect();
+    for (const tutor of tutors) {
+      if (tutor.studentIds?.includes(args.id)) {
+        await ctx.db.patch(tutor._id, {
+          studentIds: tutor.studentIds.filter(sid => sid !== args.id)
+        });
+      }
+    }
+    // 4. Remove schedule slots referencing this student (where the tutor is the owner)
+    const tutorSlotsReferencingStudent = await ctx.db
+      .query("schedules")
+      .filter((q) => q.eq(q.field("studentId"), args.id))
+      .collect();
+    for (const ts of tutorSlotsReferencingStudent) {
+       await ctx.db.delete(ts._id);
     }
   },
 });

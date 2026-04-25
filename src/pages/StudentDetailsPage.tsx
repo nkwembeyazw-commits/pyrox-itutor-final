@@ -10,11 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import Papa from "papaparse";
-import { format, addDays } from "date-fns";
+import { format } from "date-fns";
 import { toast } from "sonner";
 import { Doc } from '@convex/_generated/dataModel';
 import { Link } from 'react-router-dom';
 import { SUBJECT_LIST } from '@/lib/constants';
+import { calculateNextDue, isOverdue as checkOverdue } from '@/lib/utils';
 export function StudentDetailsPage() {
   const students = useQuery(api.pyrox.getStudents);
   const updateStudent = useMutation(api.pyrox.updateStudent);
@@ -22,11 +23,6 @@ export function StudentDetailsPage() {
   const [editingStudent, setEditingStudent] = useState<Doc<"students"> | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const calculateNextDue = (lastPaid: number | undefined, interval: "weekly" | "monthly" | undefined, enrollmentDate: number) => {
-    const base = lastPaid || enrollmentDate;
-    const period = interval || "monthly";
-    return addDays(new Date(base), period === "weekly" ? 7 : 30).getTime();
-  };
   const handleExport = () => {
     if (!students) return;
     const data = students.map(s => {
@@ -125,7 +121,7 @@ export function StudentDetailsPage() {
                 ) : (
                   students.map((student) => {
                     const nextDue = calculateNextDue(student.lastPaidDate, student.paymentInterval, student.createdAt);
-                    const isOverdue = nextDue < Date.now();
+                    const isOverdue = checkOverdue(nextDue);
                     return (
                       <TableRow key={student._id} className="h-24 hover:bg-white/5 transition-colors border-b border-white/5 group">
                         <TableCell className="px-8">
