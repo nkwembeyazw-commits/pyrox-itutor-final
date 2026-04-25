@@ -11,7 +11,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { Users, UserPlus } from 'lucide-react';
+import { Users } from 'lucide-react';
+import { Id } from '@convex/_generated/dataModel';
 const SUBJECTS = [
   "Mathematics", "Physics", "Chemistry", "Biology", "English", "History", "Computer Science", "Business"
 ];
@@ -19,9 +20,9 @@ const tutorSchema = z.object({
   name: z.string().min(2, "Name is required"),
   contact: z.string().min(5, "Contact info is required"),
   mode: z.string().min(1, "Mode is required"),
-  rate: z.coerce.number().min(1, "Rate must be positive"),
+  rate: z.preprocess((val) => Number(val), z.number().min(1, "Rate must be positive")),
   subjects: z.array(z.string()).min(1, "Select at least one subject"),
-  studentIds: z.array(z.string()).optional(),
+  studentIds: z.array(z.string()).default([]),
 });
 type TutorForm = z.infer<typeof tutorSchema>;
 export function RegisterTutorPage() {
@@ -30,15 +31,26 @@ export function RegisterTutorPage() {
   const navigate = useNavigate();
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<TutorForm>({
     resolver: zodResolver(tutorSchema),
-    defaultValues: { subjects: [], studentIds: [] }
+    defaultValues: { 
+      name: "",
+      contact: "",
+      mode: "",
+      rate: 0,
+      subjects: [], 
+      studentIds: [] 
+    }
   });
   const selectedSubjects = watch("subjects");
-  const selectedStudents = watch("studentIds") || [];
+  const selectedStudents = watch("studentIds");
   const onSubmit = async (data: TutorForm) => {
     try {
       await createTutor({
-        ...data,
-        studentIds: (data.studentIds || []) as any,
+        name: data.name,
+        contact: data.contact,
+        mode: data.mode,
+        rate: data.rate,
+        subjects: data.subjects,
+        studentIds: data.studentIds as Id<"students">[],
       });
       toast.success("Tutor registered successfully!");
       navigate("/tutors/details");
@@ -77,10 +89,12 @@ export function RegisterTutorPage() {
                     <option value="In-person" className="bg-background">In-person</option>
                     <option value="Hybrid" className="bg-background">Hybrid</option>
                   </select>
+                  {errors.mode && <p className="text-primary font-semibold">{errors.mode.message}</p>}
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent">Hourly Rate ($)</Label>
                   <Input type="number" {...register("rate")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="50" />
+                  {errors.rate && <p className="text-primary font-semibold">{errors.rate.message}</p>}
                 </div>
               </div>
               <div className="space-y-6">
@@ -89,13 +103,14 @@ export function RegisterTutorPage() {
                   {SUBJECTS.map((subject) => (
                     <div key={subject} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all cursor-pointer ${selectedSubjects.includes(subject) ? 'bg-primary/20 border-primary shadow-neon-red' : 'bg-secondary/30 border-white/10'}`} onClick={() => {
                       const next = selectedSubjects.includes(subject) ? selectedSubjects.filter(s => s !== subject) : [...selectedSubjects, subject];
-                      setValue("subjects", next);
+                      setValue("subjects", next, { shouldValidate: true });
                     }}>
                       <Checkbox checked={selectedSubjects.includes(subject)} className="h-6 w-6" />
                       <span className="text-lg font-medium">{subject}</span>
                     </div>
                   ))}
                 </div>
+                {errors.subjects && <p className="text-primary font-semibold">{errors.subjects.message}</p>}
               </div>
               <div className="space-y-6">
                 <Label className="text-xl font-bold text-accent">Assign Students</Label>

@@ -16,6 +16,8 @@ import { RegisterStudentPage } from '@/pages/RegisterStudentPage'
 import { StudentDetailsPage } from '@/pages/StudentDetailsPage'
 import { RegisterTutorPage } from '@/pages/RegisterTutorPage'
 import { TutorDetailsPage } from '@/pages/TutorDetailsPage'
+import { StudentSchedulePage } from '@/pages/StudentSchedulePage'
+import { TutorSchedulePage } from '@/pages/TutorSchedulePage'
 const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
@@ -27,8 +29,8 @@ const router = createBrowserRouter([
       { path: "/students/details", element: <StudentDetailsPage /> },
       { path: "/tutors/register", element: <RegisterTutorPage /> },
       { path: "/tutors/details", element: <TutorDetailsPage /> },
-      { path: "/schedules/student", element: <div className="p-8 text-white text-3xl font-bold">Student Schedule Grid - Coming Phase 3</div> },
-      { path: "/schedules/tutor", element: <div className="p-8 text-white text-3xl font-bold">Tutor Schedule Grid - Coming Phase 3</div> },
+      { path: "/schedules/student", element: <StudentSchedulePage /> },
+      { path: "/schedules/tutor", element: <TutorSchedulePage /> },
     ],
   },
 ]);

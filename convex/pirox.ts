@@ -42,3 +42,44 @@ export const getTutors = query({
     return await ctx.db.query("tutors").order("desc").collect();
   },
 });
+export const upsertScheduleSlot = mutation({
+  args: {
+    ownerId: v.union(v.id("students"), v.id("tutors")),
+    ownerType: v.union(v.literal("student"), v.literal("tutor")),
+    day: v.string(),
+    timeSlot: v.string(),
+    subject: v.optional(v.string()),
+    notes: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("schedules")
+      .withIndex("by_owner", (q) => q.eq("ownerId", args.ownerId))
+      .filter((q) => q.and(q.eq(q.field("day"), args.day), q.eq(q.field("timeSlot"), args.timeSlot)))
+      .unique();
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        subject: args.subject,
+        notes: args.notes,
+      });
+      return existing._id;
+    } else {
+      return await ctx.db.insert("schedules", args);
+    }
+  },
+});
+export const getSchedule = query({
+  args: { ownerId: v.id("students") || v.id("tutors") },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("schedules")
+      .withIndex("by_owner", (q) => q.eq("ownerId", args.ownerId as any))
+      .collect();
+  },
+});
+export const deleteScheduleSlot = mutation({
+  args: { slotId: v.id("schedules") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.slotId);
+  },
+});
