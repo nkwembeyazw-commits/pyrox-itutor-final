@@ -1,6 +1,6 @@
 # Pirox iTutor Sched
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/nkwembeyazw-commits/pyrox-itutor-final)
 
 A production-ready full-stack application starter kit featuring React frontend, Cloudflare Workers backend with Hono, and Convex for real-time database, authentication, and file storage. Includes email OTP auth, file upload/download/delete, responsive UI with shadcn/ui and Tailwind CSS, and seamless deployment to Cloudflare.
 
@@ -114,7 +114,7 @@ Edit `src/pages/`, use `AppLayout` for sidebar.
    Set `VITE_CONVEX_URL` in Pages > Settings > Environment Variables.
    Set SMTP vars in Convex dashboard.
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/nkwembeyazw-commits/pyrox-itutor-final)
 
 **Production Notes**:
 - Convex handles scaling, auth, storage.
