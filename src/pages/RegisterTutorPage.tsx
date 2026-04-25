@@ -10,13 +10,11 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
-import { Users, Sparkles } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Users, Sparkles, ArrowLeft } from 'lucide-react';
 import { Id } from '@convex/_generated/dataModel';
 import { BrandLogo } from '@/components/BrandLogo';
-const SUBJECTS = [
-  "Mathematics", "Physics", "Chemistry", "Biology", "English", "History", "Computer Science", "Business"
-];
+import { SUBJECT_LIST } from '@/lib/constants';
 const tutorSchema = z.object({
   name: z.string().min(2, "Name is required"),
   contact: z.string().min(5, "Contact info is required"),
@@ -61,35 +59,43 @@ export function RegisterTutorPage() {
   };
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="py-8 md:py-10 lg:py-12">
+      <div className="py-8 md:py-10 lg:py-12 space-y-6">
+        <div className="flex justify-start">
+          <Button asChild variant="ghost" className="text-primary hover:text-primary/80 font-bold gap-2">
+            <Link to="/">
+              <ArrowLeft className="h-5 w-5" />
+              Back to Dashboard
+            </Link>
+          </Button>
+        </div>
         <Card className="glass-metallic neon-border-red border-2 overflow-hidden shadow-2xl transition-all duration-500">
-          <CardHeader className="bg-primary p-8 border-b border-white/10">
+          <CardHeader className="bg-primary p-6 md:p-8 border-b border-white/10">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <Users className="h-10 w-10 text-white" />
-                <CardTitle className="text-4xl text-white font-display tracking-tight text-glow-red uppercase">PyroX Tutor Commissioning</CardTitle>
+                <Users className="h-8 w-8 md:h-10 md:w-10 text-white" />
+                <CardTitle className="text-2xl md:text-4xl text-white font-display tracking-tight text-glow-red uppercase">PyroX Tutor Commissioning</CardTitle>
               </div>
-              <BrandLogo variant="icon" size={40} />
+              <BrandLogo variant="icon" size={40} className="hidden sm:flex" />
             </div>
           </CardHeader>
-          <CardContent className="p-8 space-y-10">
+          <CardContent className="p-6 md:p-8 space-y-10">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent flex items-center gap-2 uppercase tracking-widest text-xs">
                     <Sparkles className="h-4 w-4" /> Full Name
                   </Label>
-                  <Input {...register("name")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white font-bold" placeholder="Expert Name" />
+                  <Input {...register("name")} className="h-14 md:h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white font-bold" placeholder="Expert Name" />
                   {errors.name && <p className="text-primary font-bold text-xs uppercase italic">{errors.name.message}</p>}
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent uppercase tracking-widest text-xs">Communication Link</Label>
-                  <Input {...register("contact")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white font-bold" placeholder="Email / ID Protocol" />
+                  <Input {...register("contact")} className="h-14 md:h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white font-bold" placeholder="Email / ID Protocol" />
                   {errors.contact && <p className="text-primary font-bold text-xs uppercase italic">{errors.contact.message}</p>}
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent uppercase tracking-widest text-xs">Instruction Mode</Label>
-                  <select {...register("mode")} className="flex h-16 w-full rounded-md border-accent/30 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent font-bold">
+                  <select {...register("mode")} className="flex h-14 md:h-16 w-full rounded-md border-accent/30 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent font-bold">
                     <option value="" className="bg-background">Select Mode</option>
                     <option value="Online" className="bg-background">Online</option>
                     <option value="In-person" className="bg-background">In-person</option>
@@ -99,14 +105,14 @@ export function RegisterTutorPage() {
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent uppercase tracking-widest text-xs">Credit Rate ($/hr)</Label>
-                  <Input type="number" {...register("rate", { valueAsNumber: true })} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white font-bold" placeholder="0.00" />
+                  <Input type="number" {...register("rate", { valueAsNumber: true })} className="h-14 md:h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white font-bold" placeholder="0.00" />
                   {errors.rate && <p className="text-primary font-bold text-xs uppercase italic">{errors.rate.message}</p>}
                 </div>
               </div>
               <div className="space-y-6">
                 <Label className="text-xl font-bold text-primary uppercase tracking-[0.2em] text-xs">Core Knowledge Disciplines</Label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {SUBJECTS.map((subject) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  {SUBJECT_LIST.map((subject) => (
                     <div key={subject} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all cursor-pointer ${selectedSubjects.includes(subject) ? 'bg-primary/20 border-primary shadow-neon-red' : 'bg-secondary/30 border-white/10'}`}>
                       <Checkbox
                         id={`tutor-subject-${subject}`}
@@ -145,7 +151,7 @@ export function RegisterTutorPage() {
                   ))}
                 </div>
               </div>
-              <Button type="submit" size="lg" className="w-full h-20 text-2xl font-black rounded-full bg-primary hover:bg-primary/90 shadow-neon-red hover:scale-[1.01] transition-all uppercase tracking-[0.2em]">
+              <Button type="submit" size="lg" className="w-full h-16 md:h-20 text-xl md:text-2xl font-black rounded-full bg-primary hover:bg-primary/90 shadow-neon-red hover:scale-[1.01] transition-all uppercase tracking-[0.2em]">
                 Authorize Expert Deployment
               </Button>
             </form>

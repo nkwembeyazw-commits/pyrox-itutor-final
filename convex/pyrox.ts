@@ -108,6 +108,8 @@ export const upsertScheduleSlot = mutation({
     timeSlot: v.string(),
     subject: v.optional(v.string()),
     notes: v.optional(v.string()),
+    studentId: v.optional(v.id("students")),
+    studentName: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db
@@ -123,6 +125,8 @@ export const upsertScheduleSlot = mutation({
         await ctx.db.patch(existing._id, {
           subject: args.subject,
           notes: args.notes,
+          studentId: args.studentId,
+          studentName: args.studentName,
         });
       }
     } else if (args.subject || args.notes) {

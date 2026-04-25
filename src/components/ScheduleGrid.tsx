@@ -5,6 +5,7 @@ interface SlotData {
   timeSlot: string;
   subject?: string;
   notes?: string;
+  studentName?: string;
 }
 interface ScheduleGridProps {
   slots: SlotData[];
@@ -27,9 +28,9 @@ export function ScheduleGrid({ slots, onCellClick, accentColor = "cyan" }: Sched
       <table className="w-full border-collapse min-w-[1100px] table-fixed">
         <thead>
           <tr className="bg-secondary/80 h-16">
-            <th className="border border-white/5 w-28 text-muted-foreground font-mono text-sm">TIME</th>
+            <th className="border border-white/5 w-28 text-muted-foreground font-mono text-xs">TIME</th>
             {DAYS.map(day => (
-              <th key={day} className={cn("border border-white/5 text-base font-bold uppercase tracking-widest", textAccentClass)}>
+              <th key={day} className={cn("border border-white/5 text-sm font-bold uppercase tracking-widest", textAccentClass)}>
                 {day}
               </th>
             ))}
@@ -38,7 +39,7 @@ export function ScheduleGrid({ slots, onCellClick, accentColor = "cyan" }: Sched
         <tbody>
           {TIMES.map(time => (
             <tr key={time} className="h-28 hover:bg-white/5 transition-colors">
-              <td className="border border-white/5 text-center font-mono text-xs text-muted-foreground bg-secondary/20">
+              <td className="border border-white/5 text-center font-mono text-[10px] text-muted-foreground bg-secondary/20">
                 {time}
               </td>
               {DAYS.map(day => {
@@ -49,24 +50,35 @@ export function ScheduleGrid({ slots, onCellClick, accentColor = "cyan" }: Sched
                     key={`${day}-${time}`}
                     onClick={() => onCellClick(day, time, slot)}
                     className={cn(
-                      "border border-white/5 p-3 cursor-pointer transition-all relative group",
+                      "border border-white/5 p-2 cursor-pointer transition-all relative group",
                       slot ? (accentColor === "cyan" ? "bg-accent/30" : "bg-primary/30") : "hover:bg-white/10",
                       slot && glowClass
                     )}
                   >
                     {slot ? (
                       <div className="flex flex-col h-full justify-center items-center text-center space-y-1">
-                        <span className="text-base font-bold text-white break-words leading-tight">{slot.subject}</span>
-                        {slot.notes && <span className="text-[10px] text-muted-foreground leading-tight italic line-clamp-2">{slot.notes}</span>}
+                        {slot.studentName && (
+                          <span className="text-[10px] font-black uppercase text-accent leading-none truncate max-w-full">
+                            {slot.studentName}
+                          </span>
+                        )}
+                        <span className="text-sm font-bold text-white break-words leading-tight px-1">
+                          {slot.subject}
+                        </span>
+                        {slot.notes && (
+                          <span className="text-[9px] text-muted-foreground leading-tight italic line-clamp-2 px-1">
+                            {slot.notes}
+                          </span>
+                        )}
                       </div>
                     ) : (
                       <div className="opacity-0 group-hover:opacity-100 flex justify-center items-center h-full">
-                        <span className={cn("text-xs font-bold uppercase", textAccentClass)}>+ Schedule</span>
+                        <span className={cn("text-[10px] font-bold uppercase", textAccentClass)}>+ Schedule</span>
                       </div>
                     )}
                     {isMealBreak && !slot && (
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-                        <span className="text-[10px] uppercase font-bold text-white/50 tracking-tighter rotate-12">Recess</span>
+                        <span className="text-[9px] uppercase font-bold text-white/50 tracking-tighter rotate-12">Recess</span>
                       </div>
                     )}
                   </td>

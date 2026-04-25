@@ -18,11 +18,16 @@
   * {
     @apply border-border;
   }
+  html, body {
+    @apply overflow-x-hidden;
+    max-width: 100vw;
+  }
   body {
     @apply bg-background text-foreground;
     background-image: radial-gradient(circle at 50% 50%, #16204d 0%, #0a0f2e 100%);
     min-height: 100vh;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-overflow-scrolling: touch;
   }
 }
 @layer components {
@@ -46,16 +51,15 @@
 /* Print Optimizations */
 @media print {
   @page {
-    size: auto;
-    margin: 10mm;
+    size: landscape;
+    margin: 5mm;
   }
   body {
     background: white !important;
     background-image: none !important;
     color: black !important;
   }
-  body::before { display: none !important; }
-  .no-print, nav, aside, button, .sidebar-trigger {
+  .no-print, nav, aside, button, .sidebar-trigger, [role="navigation"] {
     display: none !important;
   }
   .print-section {
@@ -64,35 +68,19 @@
   }
   .glass-metallic {
     background: none !important;
-    border: 1px solid #ddd !important;
+    border: 1px solid #000 !important;
     box-shadow: none !important;
     color: black !important;
   }
   table {
     border-collapse: collapse !important;
     width: 100% !important;
-    color: black !important;
+    table-layout: fixed !important;
   }
   th, td {
-    border: 1px solid #aaa !important;
-    color: black !important;
-    background: none !important;
-    padding: 8px !important;
-  }
-  .text-white, .text-accent, .text-primary, .text-glow-cyan, .text-glow-red {
-    color: black !important;
-    text-shadow: none !important;
-  }
-  .page-break-after {
-    page-break-after: always;
-  }
-  /* High contrast grid for schedules */
-  .bg-accent\/30, .bg-primary\/30 {
-    background-color: #f0f0f0 !important;
-    border: 2px solid black !important;
-  }
-  .text-muted-foreground {
-    color: #666 !important;
+    border: 1px solid #000 !important;
+    padding: 4px !important;
+    font-size: 8pt !important;
   }
 }
 /* Water splash motif background */
@@ -108,7 +96,8 @@ body::before {
   z-index: -1;
 }
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   @apply bg-background;
