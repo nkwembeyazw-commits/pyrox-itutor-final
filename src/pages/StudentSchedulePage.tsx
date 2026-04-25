@@ -13,8 +13,12 @@ import { Id } from '@convex/_generated/dataModel';
 export function StudentSchedulePage() {
   const students = useQuery(api.pirox.getStudents) ?? [];
   const [selectedStudentId, setSelectedStudentId] = useState<Id<"students"> | null>(null);
+  
+  // Type-safe argument for getSchedule to match Convex union validator
+  const queryArgs = selectedStudentId ? { ownerId: selectedStudentId } : "skip";
+  const schedule = useQuery(api.pirox.getSchedule, queryArgs === "skip" ? "skip" : queryArgs) ?? [];
+
   const selectedStudent = students.find(s => s._id === selectedStudentId);
-  const schedule = useQuery(api.pirox.getSchedule, { ownerId: selectedStudentId as any }) ?? [];
   const upsertSlot = useMutation(api.pirox.upsertScheduleSlot);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeCell, setActiveCell] = useState<{ day: string; time: string } | null>(null);

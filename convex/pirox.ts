@@ -30,9 +30,7 @@ export const updateStudent = mutation({
 export const deleteStudent = mutation({
   args: { id: v.id("students") },
   handler: async (ctx, args) => {
-    // Delete student
     await ctx.db.delete(args.id);
-    // Cascade delete schedules
     const schedules = await ctx.db
       .query("schedules")
       .withIndex("by_owner", (q) => q.eq("ownerId", args.id))
@@ -109,12 +107,11 @@ export const upsertScheduleSlot = mutation({
   },
 });
 export const getSchedule = query({
-  args: { ownerId: v.id("students") || v.id("tutors") },
+  args: { ownerId: v.union(v.id("students"), v.id("tutors")) },
   handler: async (ctx, args) => {
-    if (!args.ownerId) return [];
     return await ctx.db
       .query("schedules")
-      .withIndex("by_owner", (q) => q.eq("ownerId", args.ownerId as any))
+      .withIndex("by_owner", (q) => q.eq("ownerId", args.ownerId))
       .collect();
   },
 });

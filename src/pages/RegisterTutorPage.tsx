@@ -20,7 +20,7 @@ const tutorSchema = z.object({
   name: z.string().min(2, "Name is required"),
   contact: z.string().min(5, "Contact info is required"),
   mode: z.string().min(1, "Mode is required"),
-  rate: z.preprocess((val) => Number(val), z.number().min(1, "Rate must be positive")),
+  rate: z.coerce.number().min(1, "Rate must be positive"),
   subjects: z.array(z.string()).min(1, "Select at least one subject"),
   studentIds: z.array(z.string()).default([]),
 });
@@ -40,8 +40,8 @@ export function RegisterTutorPage() {
       studentIds: []
     }
   });
-  const selectedSubjects = watch("subjects");
-  const selectedStudents = watch("studentIds");
+  const selectedSubjects = watch("subjects") || [];
+  const selectedStudents = watch("studentIds") || [];
   const onSubmit = async (data: TutorForm) => {
     try {
       await createTutor({
@@ -74,12 +74,12 @@ export function RegisterTutorPage() {
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent">Full Name</Label>
                   <Input {...register("name")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="Dr. Sarah Smith" />
-                  {errors.name && <p className="text-primary font-semibold">{errors.name.message as string}</p>}
+                  {errors.name && <p className="text-primary font-semibold">{errors.name.message}</p>}
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent">Contact Information</Label>
                   <Input {...register("contact")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="Email or Phone" />
-                  {errors.contact && <p className="text-primary font-semibold">{errors.contact.message as string}</p>}
+                  {errors.contact && <p className="text-primary font-semibold">{errors.contact.message}</p>}
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent">Teaching Mode</Label>
@@ -89,12 +89,12 @@ export function RegisterTutorPage() {
                     <option value="In-person" className="bg-background">In-person</option>
                     <option value="Hybrid" className="bg-background">Hybrid</option>
                   </select>
-                  {errors.mode && <p className="text-primary font-semibold">{errors.mode.message as string}</p>}
+                  {errors.mode && <p className="text-primary font-semibold">{errors.mode.message}</p>}
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent">Hourly Rate ($)</Label>
                   <Input type="number" {...register("rate")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="50" />
-                  {errors.rate && <p className="text-primary font-semibold">{errors.rate.message as string}</p>}
+                  {errors.rate && <p className="text-primary font-semibold">{errors.rate.message}</p>}
                 </div>
               </div>
               <div className="space-y-6">
@@ -115,7 +115,7 @@ export function RegisterTutorPage() {
                     </div>
                   ))}
                 </div>
-                {errors.subjects && <p className="text-primary font-semibold">{errors.subjects.message as string}</p>}
+                {errors.subjects && <p className="text-primary font-semibold">{errors.subjects.message}</p>}
               </div>
               <div className="space-y-6">
                 <Label className="text-xl font-bold text-accent">Assign Students</Label>
