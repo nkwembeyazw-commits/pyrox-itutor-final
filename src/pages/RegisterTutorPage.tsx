@@ -64,7 +64,7 @@ export function RegisterTutorPage() {
           <Button asChild variant="ghost" className="text-primary hover:text-primary/80 font-bold gap-2">
             <Link to="/">
               <ArrowLeft className="h-5 w-5" />
-              Back to Dashboard
+              Back
             </Link>
           </Button>
         </div>
@@ -72,10 +72,10 @@ export function RegisterTutorPage() {
           <CardHeader className="bg-primary p-6 md:p-8 border-b border-white/10">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <Users className="h-8 w-8 md:h-10 md:w-10 text-white" />
-                <CardTitle className="text-2xl md:text-4xl text-white font-display tracking-tight text-glow-red uppercase">PyroX Tutor Commissioning</CardTitle>
+                <Users className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                <CardTitle className="text-xl md:text-3xl text-white font-display tracking-tight text-glow-red uppercase">PyroX Tutor Commissioning</CardTitle>
               </div>
-              <BrandLogo variant="icon" size={40} className="hidden sm:flex" />
+              <BrandLogo variant="icon" size={32} className="hidden sm:flex" />
             </div>
           </CardHeader>
           <CardContent className="p-6 md:p-8 space-y-10">
@@ -85,17 +85,17 @@ export function RegisterTutorPage() {
                   <Label className="text-xl font-bold text-accent flex items-center gap-2 uppercase tracking-widest text-xs">
                     <Sparkles className="h-4 w-4" /> Full Name
                   </Label>
-                  <Input {...register("name")} className="h-14 md:h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white font-bold" placeholder="Expert Name" />
+                  <input {...register("name")} className="flex h-12 md:h-14 w-full rounded-md border-accent/30 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent font-bold" placeholder="Expert Name" />
                   {errors.name && <p className="text-primary font-bold text-xs uppercase italic">{errors.name.message}</p>}
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent uppercase tracking-widest text-xs">Communication Link</Label>
-                  <Input {...register("contact")} className="h-14 md:h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white font-bold" placeholder="Email / ID Protocol" />
+                  <input {...register("contact")} className="flex h-12 md:h-14 w-full rounded-md border-accent/30 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent font-bold" placeholder="Email / ID Protocol" />
                   {errors.contact && <p className="text-primary font-bold text-xs uppercase italic">{errors.contact.message}</p>}
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent uppercase tracking-widest text-xs">Instruction Mode</Label>
-                  <select {...register("mode")} className="flex h-14 md:h-16 w-full rounded-md border-accent/30 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent font-bold">
+                  <select {...register("mode")} className="flex h-12 md:h-14 w-full rounded-md border-accent/30 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent font-bold">
                     <option value="" className="bg-background">Select Mode</option>
                     <option value="Online" className="bg-background">Online</option>
                     <option value="In-person" className="bg-background">In-person</option>
@@ -105,7 +105,7 @@ export function RegisterTutorPage() {
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent uppercase tracking-widest text-xs">Credit Rate ($/hr)</Label>
-                  <Input type="number" {...register("rate", { valueAsNumber: true })} className="h-14 md:h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white font-bold" placeholder="0.00" />
+                  <input type="number" {...register("rate", { valueAsNumber: true })} className="flex h-12 md:h-14 w-full rounded-md border-accent/30 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent font-bold" placeholder="0.00" />
                   {errors.rate && <p className="text-primary font-bold text-xs uppercase italic">{errors.rate.message}</p>}
                 </div>
               </div>

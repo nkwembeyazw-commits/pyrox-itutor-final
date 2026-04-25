@@ -40,11 +40,11 @@ export function BrandLogo({ variant = "full", className, size = 48 }: BrandLogoP
         </svg>
       </div>
       {variant === "full" && (
-        <div className="flex flex-col">
-          <span className="text-2xl font-display font-black tracking-tighter text-white leading-none">
+        <div className="flex flex-col justify-center">
+          <span className="text-xl font-display font-black tracking-tighter text-white leading-none">
             PYROX<span className="text-primary">-iTutor</span>
           </span>
-          <span className="text-[10px] uppercase tracking-[0.3em] text-accent font-bold mt-1 animate-pulse">
+          <span className="text-[9px] uppercase tracking-[0.3em] text-accent font-bold mt-1 animate-pulse">
             Elite Control
           </span>
         </div>

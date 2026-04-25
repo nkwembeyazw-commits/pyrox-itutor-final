@@ -18,23 +18,23 @@ function ScheduleReport({ studentId, studentName, level }: { studentId: Id<"stud
     <div className="page-break mb-12 p-4 text-black">
       <div className="flex justify-between items-center border-b-2 border-black pb-6 mb-8">
         <div className="flex items-center gap-6">
-          <BrandLogo variant="icon" size={80} className="invert" />
+          <BrandLogo variant="icon" size={60} className="invert" />
           <div>
-            <h2 className="text-4xl font-black uppercase tracking-tighter">PyroX Student Schedule</h2>
-            <p className="text-sm font-mono uppercase tracking-[0.3em] text-gray-500">Learner Protocol ID: {studentId.slice(0, 8)}</p>
+            <h2 className="text-3xl font-black uppercase tracking-tighter">PyroX Student Schedule</h2>
+            <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-gray-500">Learner Protocol ID: {studentId.slice(0, 8)}</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-3xl font-black uppercase">{studentName}</p>
+          <p className="text-2xl font-black uppercase">{studentName}</p>
           <div className="flex items-center justify-end gap-2 mt-1">
-            <span className="px-3 py-1 bg-black text-white text-xs font-bold uppercase tracking-widest rounded">{level} Tier</span>
+            <span className="px-3 py-1 bg-black text-white text-[10px] font-bold uppercase tracking-widest rounded">{level} Tier</span>
           </div>
         </div>
       </div>
       <div className="border border-black">
         <ScheduleGrid slots={schedule} onCellClick={() => {}} accentColor="cyan" />
       </div>
-      <div className="mt-12 flex justify-between items-center text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em]">
+      <div className="mt-12 flex justify-between items-center text-[9px] font-bold text-gray-400 uppercase tracking-[0.4em]">
         <span>Generated: {new Date().toLocaleDateString()}</span>
         <span>Ignite Knowledge. Inspire Futures.</span>
         <span>© PyroX Systems</span>
@@ -109,10 +109,10 @@ export function StudentSchedulePage() {
         <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
           <div className="flex items-center gap-6">
             <div className="bg-accent p-4 rounded-2xl shadow-neon-cyan animate-pulse">
-              <Calendar className="h-10 w-10 text-background" />
+              <Calendar className="h-8 w-8 md:h-10 md:w-10 text-background" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-5xl font-bold text-white font-display tracking-tight text-glow-cyan uppercase leading-tight">Student Schedule</h1>
+              <h1 className="text-2xl md:text-4xl font-bold text-white font-display tracking-tight text-glow-cyan uppercase leading-tight">Student Schedule</h1>
               <p className="text-muted-foreground text-sm md:text-lg font-medium italic">Academic success timeline via PyroX.</p>
             </div>
           </div>
@@ -154,7 +154,7 @@ export function StudentSchedulePage() {
           </div>
         ) : (
           <div className="glass-metallic h-[400px] md:h-[600px] flex flex-col items-center justify-center rounded-3xl border-dashed border-2 border-accent/30 space-y-6">
-            <Calendar className="h-24 w-24 md:h-32 md:w-32 text-accent/20 animate-pulse" />
+            <Calendar className="h-20 w-20 md:h-24 md:w-24 text-accent/20 animate-pulse" />
             <h2 className="text-xl md:text-3xl font-bold text-muted-foreground text-center uppercase tracking-widest px-4">Identify a learner to visualize trajectory</h2>
           </div>
         )}

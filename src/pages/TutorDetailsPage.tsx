@@ -89,7 +89,7 @@ export function TutorDetailsPage() {
               <Briefcase className="h-8 w-8 md:h-10 md:w-10 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-5xl font-bold text-white font-display tracking-tight text-glow-red uppercase leading-tight">Expert Roster</h1>
+              <h1 className="text-2xl md:text-4xl font-bold text-white font-display tracking-tight text-glow-red uppercase leading-tight">Expert Roster</h1>
               <p className="text-muted-foreground text-sm md:text-lg italic font-medium">Knowledge Leader Directory.</p>
             </div>
           </div>

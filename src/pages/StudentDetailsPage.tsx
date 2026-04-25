@@ -88,7 +88,7 @@ export function StudentDetailsPage() {
               <Database className="h-8 w-8 md:h-10 md:w-10 text-background" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-5xl font-bold text-white font-display tracking-tight text-glow-cyan uppercase leading-tight">Student Registry</h1>
+              <h1 className="text-2xl md:text-4xl font-bold text-white font-display tracking-tight text-glow-cyan uppercase leading-tight">Student Registry</h1>
               <p className="text-muted-foreground text-sm md:text-lg italic">Real-time Enrollment mainframe.</p>
             </div>
           </div>

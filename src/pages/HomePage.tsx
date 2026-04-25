@@ -22,21 +22,21 @@ export function HomePage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-primary animate-bounce">
-              <Sparkles className="h-6 w-6" />
-              <span className="text-sm font-bold uppercase tracking-[0.3em]">Ignite Knowledge. Inspire Futures.</span>
+              <Sparkles className="h-5 w-5" />
+              <span className="text-xs font-bold uppercase tracking-[0.3em]">Ignite Knowledge. Inspire Futures.</span>
             </div>
-            <div className="flex items-center gap-6">
-              <BrandLogo variant="icon" size={80} />
-              <h1 className="text-6xl md:text-8xl font-display font-extrabold tracking-tighter text-white">
+            <div className="flex items-center gap-5">
+              <BrandLogo variant="icon" size={64} />
+              <h1 className="text-3xl md:text-5xl font-display font-extrabold tracking-tighter text-white">
                 PyroX <span className="text-primary text-glow-red">iTutor</span>
               </h1>
             </div>
-            <p className="text-2xl text-muted-foreground font-medium max-w-2xl">The elite command center for educational excellence and professional scheduling.</p>
+            <p className="text-xl text-muted-foreground font-medium max-w-2xl">The elite command center for educational excellence and professional scheduling.</p>
           </div>
           <Authenticated>
             <div className="glass-metallic p-6 rounded-2xl flex items-center gap-6 border-accent/20 shadow-neon-cyan">
               <div className="flex flex-col items-end">
-                <span className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Active Operator</span>
+                <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Active Operator</span>
                 <span className="font-bold text-xl text-accent">{user?.email?.split('@')[0]}</span>
               </div>
               <SignOutButton />

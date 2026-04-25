@@ -66,7 +66,7 @@ export function RegisterStudentPage() {
           <Button asChild variant="ghost" className="text-accent hover:text-accent/80 font-bold gap-2">
             <Link to="/">
               <ArrowLeft className="h-5 w-5" />
-              Back to Dashboard
+              Back
             </Link>
           </Button>
         </div>
@@ -74,10 +74,10 @@ export function RegisterStudentPage() {
           <CardHeader className="bg-secondary/80 p-6 md:p-8 border-b border-accent/20">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <UserPlus className="h-8 w-8 md:h-10 md:w-10 text-accent" />
-                <CardTitle className="text-2xl md:text-4xl text-white font-display tracking-tight text-glow-cyan uppercase leading-tight">PyroX Student Registration</CardTitle>
+                <UserPlus className="h-6 w-6 md:h-8 md:w-8 text-accent" />
+                <CardTitle className="text-xl md:text-3xl text-white font-display tracking-tight text-glow-cyan uppercase leading-tight">PyroX Student Registration</CardTitle>
               </div>
-              <BrandLogo variant="icon" size={40} className="hidden sm:flex" />
+              <BrandLogo variant="icon" size={32} className="hidden sm:flex" />
             </div>
           </CardHeader>
           <CardContent className="p-6 md:p-8 space-y-10">
@@ -87,19 +87,19 @@ export function RegisterStudentPage() {
                   <Label className="text-xl font-bold text-accent flex items-center gap-2 uppercase tracking-widest text-xs">
                     <Sparkles className="h-4 w-4" /> Full Name
                   </Label>
-                  <Input {...register("name")} className="h-14 md:h-16 text-lg bg-secondary/50 border-white/10 text-white placeholder:text-muted-foreground focus:border-accent transition-all font-bold" placeholder="Legal Identity" />
+                  <input {...register("name")} className="flex h-12 md:h-14 w-full rounded-md border-white/10 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent font-bold" placeholder="Legal Identity" />
                   {errors.name && <p className="text-primary font-bold text-xs uppercase italic">{errors.name.message}</p>}
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent uppercase tracking-widest text-xs">Deployment Location</Label>
-                  <Input {...register("location")} className="h-14 md:h-16 text-lg bg-secondary/50 border-white/10 text-white placeholder:text-muted-foreground focus:border-accent transition-all font-bold" placeholder="City // Campus" />
+                  <input {...register("location")} className="flex h-12 md:h-14 w-full rounded-md border-white/10 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent font-bold" placeholder="City // Campus" />
                   {errors.location && <p className="text-primary font-bold text-xs uppercase italic">{errors.location.message}</p>}
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent uppercase tracking-widest text-xs">Academic Tier</Label>
                   <select
                     {...register("level")}
-                    className="flex h-14 md:h-16 w-full rounded-md border-white/10 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent font-bold"
+                    className="flex h-12 md:h-14 w-full rounded-md border-white/10 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent font-bold"
                   >
                     <option value="" className="bg-background">Select Tier</option>
                     <option value="Primary" className="bg-background">Primary Core</option>
@@ -115,11 +115,11 @@ export function RegisterStudentPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Initial Pay</Label>
-                      <Input type="date" {...register("lastPaidDate")} className="h-12 bg-secondary/50 border-white/10 text-white font-bold" />
+                      <input type="date" {...register("lastPaidDate")} className="flex h-10 w-full rounded-md bg-secondary/50 border-white/10 text-white font-bold px-2" />
                     </div>
                     <div className="space-y-2">
                       <Label className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Billing</Label>
-                      <select {...register("paymentInterval")} className="h-12 w-full rounded-md border-white/10 bg-secondary/50 px-2 text-white font-bold">
+                      <select {...register("paymentInterval")} className="flex h-10 w-full rounded-md border-white/10 bg-secondary/50 px-2 text-white font-bold">
                         <option value="monthly">Monthly</option>
                         <option value="weekly">Weekly</option>
                       </select>
