@@ -20,7 +20,7 @@ const tutorSchema = z.object({
   name: z.string().min(2, "Name is required"),
   contact: z.string().min(5, "Contact info is required"),
   mode: z.string().min(1, "Mode is required"),
-  rate: z.string().pipe(z.coerce.number().min(1, "Rate must be positive")),
+  rate: z.preprocess((val) => Number(val), z.number().min(1, "Rate must be positive")),
   subjects: z.array(z.string()).min(1, "Select at least one subject"),
   studentIds: z.array(z.string()).default([]),
 });
@@ -35,7 +35,7 @@ export function RegisterTutorPage() {
       name: "",
       contact: "",
       mode: "",
-      rate: "",
+      rate: 0,
       subjects: [],
       studentIds: []
     }
@@ -74,12 +74,12 @@ export function RegisterTutorPage() {
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent">Full Name</Label>
                   <Input {...register("name")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="Dr. Sarah Smith" />
-                  {errors.name && <p className="text-primary font-semibold">{errors.name.message}</p>}
+                  {errors.name && <p className="text-primary font-semibold">{errors.name.message as string}</p>}
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent">Contact Information</Label>
                   <Input {...register("contact")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="Email or Phone" />
-                  {errors.contact && <p className="text-primary font-semibold">{errors.contact.message}</p>}
+                  {errors.contact && <p className="text-primary font-semibold">{errors.contact.message as string}</p>}
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent">Teaching Mode</Label>
@@ -89,20 +89,21 @@ export function RegisterTutorPage() {
                     <option value="In-person" className="bg-background">In-person</option>
                     <option value="Hybrid" className="bg-background">Hybrid</option>
                   </select>
-                  {errors.mode && <p className="text-primary font-semibold">{errors.mode.message}</p>}
+                  {errors.mode && <p className="text-primary font-semibold">{errors.mode.message as string}</p>}
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent">Hourly Rate ($)</Label>
                   <Input type="number" {...register("rate")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="50" />
-                  {errors.rate && <p className="text-primary font-semibold">{errors.rate.message}</p>}
+                  {errors.rate && <p className="text-primary font-semibold">{errors.rate.message as string}</p>}
                 </div>
               </div>
               <div className="space-y-6">
                 <Label className="text-xl font-bold text-primary">Specialized Subjects</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {SUBJECTS.map((subject) => (
-                    <div key={subject} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all ${selectedSubjects.includes(subject) ? 'bg-primary/20 border-primary shadow-neon-red' : 'bg-secondary/30 border-white/10'}`}>
+                    <div key={subject} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all cursor-pointer ${selectedSubjects.includes(subject) ? 'bg-primary/20 border-primary shadow-neon-red' : 'bg-secondary/30 border-white/10'}`}>
                       <Checkbox
+                        id={`tutor-subject-${subject}`}
                         checked={selectedSubjects.includes(subject)}
                         onCheckedChange={(checked) => {
                           const next = checked ? [...selectedSubjects, subject] : selectedSubjects.filter(s => s !== subject);
@@ -110,18 +111,19 @@ export function RegisterTutorPage() {
                         }}
                         className="h-6 w-6"
                       />
-                      <span className="text-lg font-medium">{subject}</span>
+                      <Label htmlFor={`tutor-subject-${subject}`} className="text-lg font-medium cursor-pointer flex-1">{subject}</Label>
                     </div>
                   ))}
                 </div>
-                {errors.subjects && <p className="text-primary font-semibold">{errors.subjects.message}</p>}
+                {errors.subjects && <p className="text-primary font-semibold">{errors.subjects.message as string}</p>}
               </div>
               <div className="space-y-6">
                 <Label className="text-xl font-bold text-accent">Assign Students</Label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {students.map((student) => (
-                    <div key={student._id} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all ${selectedStudents.includes(student._id) ? 'bg-accent/20 border-accent shadow-neon-cyan' : 'bg-secondary/30 border-white/10'}`}>
+                    <div key={student._id} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all cursor-pointer ${selectedStudents.includes(student._id) ? 'bg-accent/20 border-accent shadow-neon-cyan' : 'bg-secondary/30 border-white/10'}`}>
                       <Checkbox
+                        id={`tutor-student-${student._id}`}
                         checked={selectedStudents.includes(student._id)}
                         onCheckedChange={(checked) => {
                           const next = checked ? [...selectedStudents, student._id] : selectedStudents.filter(id => id !== student._id);
@@ -129,10 +131,10 @@ export function RegisterTutorPage() {
                         }}
                         className="h-6 w-6"
                       />
-                      <div className="flex flex-col">
+                      <Label htmlFor={`tutor-student-${student._id}`} className="flex flex-col cursor-pointer flex-1">
                         <span className="text-lg font-bold">{student.name}</span>
                         <span className="text-xs text-muted-foreground">{student.level}</span>
-                      </div>
+                      </Label>
                     </div>
                   ))}
                 </div>

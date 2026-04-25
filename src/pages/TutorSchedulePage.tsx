@@ -7,18 +7,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Users, Mail, Save } from "lucide-react";
+import { BookOpen, Users, Mail, Save, PlusCircle } from "lucide-react";
 import { toast } from 'sonner';
 import { Id } from '@convex/_generated/dataModel';
 export function TutorSchedulePage() {
   const tutors = useQuery(api.pirox.getTutors) ?? [];
   const [selectedTutorId, setSelectedTutorId] = useState<Id<"tutors"> | null>(null);
+  const selectedTutor = tutors.find(t => t._id === selectedTutorId);
   const schedule = useQuery(api.pirox.getSchedule, { ownerId: selectedTutorId as any }) ?? [];
   const upsertSlot = useMutation(api.pirox.upsertScheduleSlot);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeCell, setActiveCell] = useState<{ day: string; time: string } | null>(null);
   const [subject, setSubject] = useState("");
   const [notes, setNotes] = useState("");
+  const [useCustomSubject, setUseCustomSubject] = useState(false);
   const handleCellClick = (day: string, time: string, existing?: any) => {
     if (!selectedTutorId) {
       toast.error("Select a tutor to schedule sessions.");
@@ -27,6 +29,7 @@ export function TutorSchedulePage() {
     setActiveCell({ day, time });
     setSubject(existing?.subject || "");
     setNotes(existing?.notes || "");
+    setUseCustomSubject(false);
     setDialogOpen(true);
   };
   const handleSave = async () => {
@@ -87,7 +90,7 @@ export function TutorSchedulePage() {
                 <SelectTrigger className="w-full h-12 bg-transparent border-none text-xl font-bold text-white focus:ring-0">
                   <SelectValue placeholder="Select Expert" />
                 </SelectTrigger>
-                <SelectContent className="glass-metallic border-primary/20">
+                <SelectContent className="glass-metallic border-primary/20 backdrop-blur-3xl z-[100]">
                   {tutors.map(t => (
                     <SelectItem key={t._id} value={t._id} className="text-lg font-bold text-white hover:bg-primary/20 cursor-pointer">
                       {t.name} ({t.mode})
@@ -120,7 +123,28 @@ export function TutorSchedulePage() {
             <div className="space-y-6 py-4">
               <div className="space-y-2">
                 <Label className="text-lg font-bold text-white">Project / Module</Label>
-                <Input value={subject} onChange={(e) => setSubject(e.target.value)} className="h-14 bg-secondary/50 border-primary/30 text-white" placeholder="e.g. Advanced Physics Workshop" />
+                {useCustomSubject ? (
+                  <div className="flex gap-2">
+                    <Input value={subject} onChange={(e) => setSubject(e.target.value)} className="h-14 bg-secondary/50 border-primary/30 text-white" placeholder="Enter custom subject..." autoFocus />
+                    <Button variant="ghost" onClick={() => setUseCustomSubject(false)} className="h-14 text-xs text-primary">List</Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <Select value={subject} onValueChange={setSubject}>
+                      <SelectTrigger className="h-14 bg-secondary/50 border-primary/30 text-white">
+                        <SelectValue placeholder="Select expert field..." />
+                      </SelectTrigger>
+                      <SelectContent className="glass-metallic border-primary/20">
+                        {selectedTutor?.subjects.map(s => (
+                          <SelectItem key={s} value={s}>{s}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <button onClick={() => { setUseCustomSubject(true); setSubject(""); }} className="text-left text-sm text-primary/70 hover:text-primary flex items-center gap-1">
+                      <PlusCircle className="h-4 w-4" /> Add custom module
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="space-y-2">
                 <Label className="text-lg font-bold text-white">Deployment Notes</Label>

@@ -14,10 +14,44 @@ export const createStudent = mutation({
     });
   },
 });
+export const updateStudent = mutation({
+  args: {
+    id: v.id("students"),
+    name: v.string(),
+    location: v.string(),
+    level: v.string(),
+    subjects: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...updates } = args;
+    await ctx.db.patch(id, updates);
+  },
+});
+export const deleteStudent = mutation({
+  args: { id: v.id("students") },
+  handler: async (ctx, args) => {
+    // Delete student
+    await ctx.db.delete(args.id);
+    // Cascade delete schedules
+    const schedules = await ctx.db
+      .query("schedules")
+      .withIndex("by_owner", (q) => q.eq("ownerId", args.id))
+      .collect();
+    for (const s of schedules) {
+      await ctx.db.delete(s._id);
+    }
+  },
+});
 export const getStudents = query({
   args: {},
   handler: async (ctx) => {
     return await ctx.db.query("students").order("desc").collect();
+  },
+});
+export const getStudentById = query({
+  args: { id: v.id("students") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
   },
 });
 export const createTutor = mutation({
@@ -40,6 +74,12 @@ export const getTutors = query({
   args: {},
   handler: async (ctx) => {
     return await ctx.db.query("tutors").order("desc").collect();
+  },
+});
+export const getTutorById = query({
+  args: { id: v.id("tutors") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
   },
 });
 export const upsertScheduleSlot = mutation({
@@ -71,6 +111,7 @@ export const upsertScheduleSlot = mutation({
 export const getSchedule = query({
   args: { ownerId: v.id("students") || v.id("tutors") },
   handler: async (ctx, args) => {
+    if (!args.ownerId) return [];
     return await ctx.db
       .query("schedules")
       .withIndex("by_owner", (q) => q.eq("ownerId", args.ownerId as any))

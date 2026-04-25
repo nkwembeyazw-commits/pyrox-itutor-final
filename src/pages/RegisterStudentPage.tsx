@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useMutation } from 'convex/react';
@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { UserPlus, Sparkles } from 'lucide-react';
-const SUBJECTS = [
+const SUBJECT_LIST = [
   "Mathematics", "English Language", "English Literature", "Physics", "Chemistry",
   "Biology", "History", "Geography", "Computer Science", "Business Studies",
   "Accounting", "Economics", "French", "Spanish", "Art", "Music"
@@ -29,9 +29,9 @@ export function RegisterStudentPage() {
   const navigate = useNavigate();
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<StudentForm>({
     resolver: zodResolver(studentSchema),
-    defaultValues: { subjects: [] }
+    defaultValues: { name: "", location: "", level: "", subjects: [] }
   });
-  const selectedSubjects = watch("subjects");
+  const watchedSubjects = watch("subjects");
   const onSubmit = async (data: StudentForm) => {
     try {
       await createStudent(data);
@@ -39,6 +39,14 @@ export function RegisterStudentPage() {
       navigate("/students/details");
     } catch (error) {
       toast.error("Deployment failed. Check connectivity.");
+    }
+  };
+  const handleSubjectChange = (subject: string, checked: boolean) => {
+    const current = watchedSubjects;
+    if (checked) {
+      setValue("subjects", [...current, subject], { shouldValidate: true });
+    } else {
+      setValue("subjects", current.filter(s => s !== subject), { shouldValidate: true });
     }
   };
   return (
@@ -83,19 +91,22 @@ export function RegisterStudentPage() {
               <div className="space-y-6">
                 <Label className="text-xl font-bold text-primary">Core Modules Selection</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {SUBJECTS.map((subject) => (
-                    <div key={subject} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all ${selectedSubjects.includes(subject) ? 'bg-primary/20 border-primary shadow-neon-red' : 'bg-secondary/30 border-white/10 hover:border-accent/50'}`}>
-                      <Checkbox
-                        checked={selectedSubjects.includes(subject)}
-                        onCheckedChange={(checked) => {
-                          const next = checked ? [...selectedSubjects, subject] : selectedSubjects.filter(s => s !== subject);
-                          setValue("subjects", next, { shouldValidate: true });
-                        }}
-                        className="h-6 w-6"
-                      />
-                      <span className="text-lg font-medium text-white/90">{subject}</span>
-                    </div>
-                  ))}
+                  {SUBJECT_LIST.map((subject) => {
+                    const isChecked = watchedSubjects.includes(subject);
+                    return (
+                      <div key={subject} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all cursor-pointer ${isChecked ? 'bg-primary/20 border-primary shadow-neon-red' : 'bg-secondary/30 border-white/10 hover:border-accent/50'}`}>
+                        <Checkbox
+                          id={`subject-${subject}`}
+                          checked={isChecked}
+                          onCheckedChange={(checked) => handleSubjectChange(subject, !!checked)}
+                          className="h-6 w-6"
+                        />
+                        <Label htmlFor={`subject-${subject}`} className="text-lg font-medium text-white/90 cursor-pointer flex-1">
+                          {subject}
+                        </Label>
+                      </div>
+                    );
+                  })}
                 </div>
                 {errors.subjects && <p className="text-primary font-semibold">{errors.subjects.message}</p>}
               </div>

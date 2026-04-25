@@ -7,18 +7,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Calendar, GraduationCap, Save } from "lucide-react";
+import { Calendar, GraduationCap, Save, PlusCircle } from "lucide-react";
 import { toast } from 'sonner';
 import { Id } from '@convex/_generated/dataModel';
 export function StudentSchedulePage() {
   const students = useQuery(api.pirox.getStudents) ?? [];
   const [selectedStudentId, setSelectedStudentId] = useState<Id<"students"> | null>(null);
+  const selectedStudent = students.find(s => s._id === selectedStudentId);
   const schedule = useQuery(api.pirox.getSchedule, { ownerId: selectedStudentId as any }) ?? [];
   const upsertSlot = useMutation(api.pirox.upsertScheduleSlot);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeCell, setActiveCell] = useState<{ day: string; time: string } | null>(null);
   const [subject, setSubject] = useState("");
   const [notes, setNotes] = useState("");
+  const [useCustomSubject, setUseCustomSubject] = useState(false);
   const handleCellClick = (day: string, time: string, existing?: any) => {
     if (!selectedStudentId) {
       toast.error("Please select a student first.");
@@ -27,6 +29,7 @@ export function StudentSchedulePage() {
     setActiveCell({ day, time });
     setSubject(existing?.subject || "");
     setNotes(existing?.notes || "");
+    setUseCustomSubject(false);
     setDialogOpen(true);
   };
   const handleSave = async () => {
@@ -65,7 +68,7 @@ export function StudentSchedulePage() {
               <SelectTrigger className="w-full md:w-[300px] h-12 bg-transparent border-none text-xl font-bold text-white focus:ring-0">
                 <SelectValue placeholder="Select Student" />
               </SelectTrigger>
-              <SelectContent className="glass-metallic border-accent/20">
+              <SelectContent className="glass-metallic border-accent/20 backdrop-blur-3xl z-[100]">
                 {students.map(s => (
                   <SelectItem key={s._id} value={s._id} className="text-lg font-bold text-white hover:bg-accent/20 cursor-pointer">
                     {s.name} ({s.level})
@@ -91,8 +94,29 @@ export function StudentSchedulePage() {
             </DialogHeader>
             <div className="space-y-6 py-4">
               <div className="space-y-2">
-                <Label className="text-lg font-bold text-white">Subject / Module</Label>
-                <Input value={subject} onChange={(e) => setSubject(e.target.value)} className="h-14 bg-secondary/50 border-accent/30 text-white" placeholder="e.g. Pure Mathematics 1" />
+                <Label className="text-lg font-bold text-white">Module Selection</Label>
+                {useCustomSubject ? (
+                  <div className="flex gap-2">
+                    <Input value={subject} onChange={(e) => setSubject(e.target.value)} className="h-14 bg-secondary/50 border-accent/30 text-white" placeholder="Enter custom subject..." autoFocus />
+                    <Button variant="ghost" onClick={() => setUseCustomSubject(false)} className="h-14 text-xs text-accent">Select List</Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <Select value={subject} onValueChange={setSubject}>
+                      <SelectTrigger className="h-14 bg-secondary/50 border-accent/30 text-white">
+                        <SelectValue placeholder="Choose module..." />
+                      </SelectTrigger>
+                      <SelectContent className="glass-metallic border-accent/20">
+                        {selectedStudent?.subjects.map(s => (
+                          <SelectItem key={s} value={s}>{s}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <button onClick={() => { setUseCustomSubject(true); setSubject(""); }} className="text-left text-sm text-accent/70 hover:text-accent flex items-center gap-1">
+                      <PlusCircle className="h-4 w-4" /> Use custom subject
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="space-y-2">
                 <Label className="text-lg font-bold text-white">Session Notes</Label>
