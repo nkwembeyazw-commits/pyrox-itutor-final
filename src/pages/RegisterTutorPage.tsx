@@ -20,7 +20,7 @@ const tutorSchema = z.object({
   name: z.string().min(2, "Name is required"),
   contact: z.string().min(5, "Contact info is required"),
   mode: z.string().min(1, "Mode is required"),
-  rate: z.preprocess((val) => Number(val), z.number().min(1, "Rate must be positive")),
+  rate: z.string().pipe(z.coerce.number().min(1, "Rate must be positive")),
   subjects: z.array(z.string()).min(1, "Select at least one subject"),
   studentIds: z.array(z.string()).default([]),
 });
@@ -31,13 +31,13 @@ export function RegisterTutorPage() {
   const navigate = useNavigate();
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<TutorForm>({
     resolver: zodResolver(tutorSchema),
-    defaultValues: { 
+    defaultValues: {
       name: "",
       contact: "",
       mode: "",
-      rate: 0,
-      subjects: [], 
-      studentIds: [] 
+      rate: "",
+      subjects: [],
+      studentIds: []
     }
   });
   const selectedSubjects = watch("subjects");
@@ -101,11 +101,15 @@ export function RegisterTutorPage() {
                 <Label className="text-xl font-bold text-primary">Specialized Subjects</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {SUBJECTS.map((subject) => (
-                    <div key={subject} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all cursor-pointer ${selectedSubjects.includes(subject) ? 'bg-primary/20 border-primary shadow-neon-red' : 'bg-secondary/30 border-white/10'}`} onClick={() => {
-                      const next = selectedSubjects.includes(subject) ? selectedSubjects.filter(s => s !== subject) : [...selectedSubjects, subject];
-                      setValue("subjects", next, { shouldValidate: true });
-                    }}>
-                      <Checkbox checked={selectedSubjects.includes(subject)} className="h-6 w-6" />
+                    <div key={subject} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all ${selectedSubjects.includes(subject) ? 'bg-primary/20 border-primary shadow-neon-red' : 'bg-secondary/30 border-white/10'}`}>
+                      <Checkbox
+                        checked={selectedSubjects.includes(subject)}
+                        onCheckedChange={(checked) => {
+                          const next = checked ? [...selectedSubjects, subject] : selectedSubjects.filter(s => s !== subject);
+                          setValue("subjects", next, { shouldValidate: true });
+                        }}
+                        className="h-6 w-6"
+                      />
                       <span className="text-lg font-medium">{subject}</span>
                     </div>
                   ))}
@@ -116,11 +120,15 @@ export function RegisterTutorPage() {
                 <Label className="text-xl font-bold text-accent">Assign Students</Label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {students.map((student) => (
-                    <div key={student._id} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all cursor-pointer ${selectedStudents.includes(student._id) ? 'bg-accent/20 border-accent shadow-neon-cyan' : 'bg-secondary/30 border-white/10'}`} onClick={() => {
-                      const next = selectedStudents.includes(student._id) ? selectedStudents.filter(id => id !== student._id) : [...selectedStudents, student._id];
-                      setValue("studentIds", next);
-                    }}>
-                      <Checkbox checked={selectedStudents.includes(student._id)} className="h-6 w-6" />
+                    <div key={student._id} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all ${selectedStudents.includes(student._id) ? 'bg-accent/20 border-accent shadow-neon-cyan' : 'bg-secondary/30 border-white/10'}`}>
+                      <Checkbox
+                        checked={selectedStudents.includes(student._id)}
+                        onCheckedChange={(checked) => {
+                          const next = checked ? [...selectedStudents, student._id] : selectedStudents.filter(id => id !== student._id);
+                          setValue("studentIds", next, { shouldValidate: true });
+                        }}
+                        className="h-6 w-6"
+                      />
                       <div className="flex flex-col">
                         <span className="text-lg font-bold">{student.name}</span>
                         <span className="text-xs text-muted-foreground">{student.level}</span>

@@ -84,11 +84,15 @@ export function RegisterStudentPage() {
                 <Label className="text-xl font-bold text-primary">Core Modules Selection</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {SUBJECTS.map((subject) => (
-                    <div key={subject} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all cursor-pointer ${selectedSubjects.includes(subject) ? 'bg-primary/20 border-primary shadow-neon-red' : 'bg-secondary/30 border-white/10 hover:border-accent/50'}`} onClick={() => {
-                      const next = selectedSubjects.includes(subject) ? selectedSubjects.filter(s => s !== subject) : [...selectedSubjects, subject];
-                      setValue("subjects", next);
-                    }}>
-                      <Checkbox checked={selectedSubjects.includes(subject)} className="h-6 w-6" />
+                    <div key={subject} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all ${selectedSubjects.includes(subject) ? 'bg-primary/20 border-primary shadow-neon-red' : 'bg-secondary/30 border-white/10 hover:border-accent/50'}`}>
+                      <Checkbox
+                        checked={selectedSubjects.includes(subject)}
+                        onCheckedChange={(checked) => {
+                          const next = checked ? [...selectedSubjects, subject] : selectedSubjects.filter(s => s !== subject);
+                          setValue("subjects", next, { shouldValidate: true });
+                        }}
+                        className="h-6 w-6"
+                      />
                       <span className="text-lg font-medium text-white/90">{subject}</span>
                     </div>
                   ))}
