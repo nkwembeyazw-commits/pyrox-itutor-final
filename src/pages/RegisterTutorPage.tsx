@@ -11,7 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { Users } from 'lucide-react';
+import { Users, Sparkles } from 'lucide-react';
 import { Id } from '@convex/_generated/dataModel';
 const SUBJECTS = [
   "Mathematics", "Physics", "Chemistry", "Biology", "English", "History", "Computer Science", "Business"
@@ -20,7 +20,7 @@ const tutorSchema = z.object({
   name: z.string().min(2, "Name is required"),
   contact: z.string().min(5, "Contact info is required"),
   mode: z.string().min(1, "Mode is required"),
-  rate: z.coerce.number().min(1, "Rate must be positive"),
+  rate: z.coerce.number().positive("Rate must be positive"),
   subjects: z.array(z.string()).min(1, "Select at least one subject"),
   studentIds: z.array(z.string()).default([]),
 });
@@ -52,10 +52,10 @@ export function RegisterTutorPage() {
         subjects: data.subjects,
         studentIds: data.studentIds as Id<"students">[],
       });
-      toast.success("Tutor registered successfully!");
+      toast.success("Tutor commissioned for excellence!");
       navigate("/tutors/details");
     } catch (error) {
-      toast.error("Failed to register tutor.");
+      toast.error("Roster synchronization failed.");
     }
   };
   return (
@@ -65,24 +65,26 @@ export function RegisterTutorPage() {
           <CardHeader className="bg-primary p-8 rounded-t-lg border-b border-white/10">
             <div className="flex items-center gap-4">
               <Users className="h-10 w-10 text-white" />
-              <CardTitle className="text-4xl text-white font-display tracking-tight">Tutor Registration</CardTitle>
+              <CardTitle className="text-4xl text-white font-display tracking-tight text-glow-red">Tutor Registration</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="p-8 space-y-10">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div className="space-y-3">
-                  <Label className="text-xl font-bold text-accent">Full Name</Label>
-                  <Input {...register("name")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="Dr. Sarah Smith" />
+                  <Label className="text-xl font-bold text-accent flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" /> Full Name
+                  </Label>
+                  <Input {...register("name")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="Expert Name" />
                   {errors.name && <p className="text-primary font-semibold">{errors.name.message}</p>}
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-xl font-bold text-accent">Contact Information</Label>
-                  <Input {...register("contact")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="Email or Phone" />
+                  <Label className="text-xl font-bold text-accent">Communication Link</Label>
+                  <Input {...register("contact")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="Email / ID" />
                   {errors.contact && <p className="text-primary font-semibold">{errors.contact.message}</p>}
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-xl font-bold text-accent">Teaching Mode</Label>
+                  <Label className="text-xl font-bold text-accent">Instruction Mode</Label>
                   <select {...register("mode")} className="flex h-16 w-full rounded-md border-accent/30 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent">
                     <option value="" className="bg-background">Select Mode</option>
                     <option value="Online" className="bg-background">Online</option>
@@ -92,13 +94,13 @@ export function RegisterTutorPage() {
                   {errors.mode && <p className="text-primary font-semibold">{errors.mode.message}</p>}
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-xl font-bold text-accent">Hourly Rate ($)</Label>
-                  <Input type="number" {...register("rate")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="50" />
+                  <Label className="text-xl font-bold text-accent">Credit Rate ($/hr)</Label>
+                  <Input type="number" {...register("rate")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="0.00" />
                   {errors.rate && <p className="text-primary font-semibold">{errors.rate.message}</p>}
                 </div>
               </div>
               <div className="space-y-6">
-                <Label className="text-xl font-bold text-primary">Specialized Subjects</Label>
+                <Label className="text-xl font-bold text-primary uppercase tracking-widest">Core Disciplines</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {SUBJECTS.map((subject) => (
                     <div key={subject} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all cursor-pointer ${selectedSubjects.includes(subject) ? 'bg-primary/20 border-primary shadow-neon-red' : 'bg-secondary/30 border-white/10'}`}>
@@ -118,7 +120,7 @@ export function RegisterTutorPage() {
                 {errors.subjects && <p className="text-primary font-semibold">{errors.subjects.message}</p>}
               </div>
               <div className="space-y-6">
-                <Label className="text-xl font-bold text-accent">Assign Students</Label>
+                <Label className="text-xl font-bold text-accent uppercase tracking-widest">Assigned Learner Roster</Label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {students.map((student) => (
                     <div key={student._id} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all cursor-pointer ${selectedStudents.includes(student._id) ? 'bg-accent/20 border-accent shadow-neon-cyan' : 'bg-secondary/30 border-white/10'}`}>
@@ -140,7 +142,7 @@ export function RegisterTutorPage() {
                 </div>
               </div>
               <Button type="submit" size="lg" className="w-full h-20 text-2xl font-bold rounded-full bg-primary hover:bg-primary/90 shadow-neon-red hover:scale-[1.01] transition-all">
-                Finalize Tutor Roster
+                Authorize Expert Deployment
               </Button>
             </form>
           </CardContent>

@@ -7,17 +7,32 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Calendar, GraduationCap, Save, PlusCircle } from "lucide-react";
+import { Calendar, GraduationCap, Save, PlusCircle, Printer, Files } from "lucide-react";
 import { toast } from 'sonner';
 import { Id } from '@convex/_generated/dataModel';
+function ScheduleReport({ studentId, studentName, level }: { studentId: Id<"students">, studentName: string, level: string }) {
+  const schedule = useQuery(api.pirox.getSchedule, { ownerId: studentId }) ?? [];
+  return (
+    <div className="mb-20 page-break-after">
+      <div className="flex justify-between items-end border-b-2 border-black pb-4 mb-6">
+        <div>
+          <h2 className="text-3xl font-bold text-black uppercase tracking-tighter">Student Journey Report</h2>
+          <p className="text-sm font-mono text-gray-600">ID: {studentId}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-2xl font-bold text-black">{studentName}</p>
+          <p className="text-md font-bold uppercase text-gray-500">{level}</p>
+        </div>
+      </div>
+      <ScheduleGrid slots={schedule} onCellClick={() => {}} accentColor="cyan" />
+    </div>
+  );
+}
 export function StudentSchedulePage() {
   const students = useQuery(api.pirox.getStudents) ?? [];
   const [selectedStudentId, setSelectedStudentId] = useState<Id<"students"> | null>(null);
-  
-  // Type-safe argument for getSchedule to match Convex union validator
   const queryArgs = selectedStudentId ? { ownerId: selectedStudentId } : "skip";
   const schedule = useQuery(api.pirox.getSchedule, queryArgs === "skip" ? "skip" : queryArgs) ?? [];
-
   const selectedStudent = students.find(s => s._id === selectedStudentId);
   const upsertSlot = useMutation(api.pirox.upsertScheduleSlot);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -53,9 +68,15 @@ export function StudentSchedulePage() {
       toast.error("Failed to save slot.");
     }
   };
+  const printSingle = () => window.print();
+  const printAll = () => {
+    document.body.classList.add('print-all-mode');
+    window.print();
+    document.body.classList.remove('print-all-mode');
+  };
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="py-8 md:py-10 lg:py-12 space-y-12">
+      <div className="py-8 md:py-10 lg:py-12 space-y-12 no-print">
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-6">
             <div className="bg-accent p-4 rounded-2xl shadow-neon-cyan">
@@ -66,20 +87,30 @@ export function StudentSchedulePage() {
               <p className="text-muted-foreground text-lg">Timeline of academic success.</p>
             </div>
           </div>
-          <div className="flex items-center gap-4 bg-secondary/40 p-4 rounded-2xl border border-white/10 w-full md:w-auto">
-            <GraduationCap className="text-accent h-6 w-6" />
-            <Select onValueChange={(v) => setSelectedStudentId(v as Id<"students">)}>
-              <SelectTrigger className="w-full md:w-[300px] h-12 bg-transparent border-none text-xl font-bold text-white focus:ring-0">
-                <SelectValue placeholder="Select Student" />
-              </SelectTrigger>
-              <SelectContent className="glass-metallic border-accent/20 backdrop-blur-3xl z-[100]">
-                {students.map(s => (
-                  <SelectItem key={s._id} value={s._id} className="text-lg font-bold text-white hover:bg-accent/20 cursor-pointer">
-                    {s.name} ({s.level})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+            <div className="flex items-center gap-4 bg-secondary/40 p-4 rounded-2xl border border-white/10 w-full sm:w-[300px]">
+              <GraduationCap className="text-accent h-6 w-6" />
+              <Select onValueChange={(v) => setSelectedStudentId(v as Id<"students">)}>
+                <SelectTrigger className="w-full h-12 bg-transparent border-none text-xl font-bold text-white focus:ring-0">
+                  <SelectValue placeholder="Select Student" />
+                </SelectTrigger>
+                <SelectContent className="glass-metallic border-accent/20 backdrop-blur-3xl z-[100]">
+                  {students.map(s => (
+                    <SelectItem key={s._id} value={s._id} className="text-lg font-bold text-white hover:bg-accent/20 cursor-pointer">
+                      {s.name} ({s.level})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-2 w-full sm:w-auto">
+              <Button onClick={printSingle} disabled={!selectedStudentId} className="h-16 px-6 bg-accent text-background font-bold shadow-neon-cyan flex-1">
+                <Printer className="mr-2 h-5 w-5" /> Print My
+              </Button>
+              <Button onClick={printAll} variant="outline" className="h-16 px-6 border-accent text-accent font-bold hover:bg-accent/10 flex-1">
+                <Files className="mr-2 h-5 w-5" /> Print All
+              </Button>
+            </div>
           </div>
         </div>
         {selectedStudentId ? (
@@ -134,6 +165,24 @@ export function StudentSchedulePage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      </div>
+      <div className="hidden print:block print-section p-10 bg-white text-black">
+        {selectedStudentId && !document.body.classList.contains('print-all-mode') ? (
+          <ScheduleReport 
+            studentId={selectedStudentId} 
+            studentName={selectedStudent?.name || "Learner"} 
+            level={selectedStudent?.level || "Core Tier"} 
+          />
+        ) : (
+          students.map(s => (
+            <ScheduleReport 
+              key={s._id} 
+              studentId={s._id} 
+              studentName={s.name} 
+              level={s.level} 
+            />
+          ))
+        )}
       </div>
     </div>
   );

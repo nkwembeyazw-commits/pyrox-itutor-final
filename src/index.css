@@ -43,6 +43,58 @@
     text-shadow: 0 0 10px rgba(255, 23, 68, 0.6);
   }
 }
+/* Print Optimizations */
+@media print {
+  @page {
+    size: auto;
+    margin: 10mm;
+  }
+  body {
+    background: white !important;
+    background-image: none !important;
+    color: black !important;
+  }
+  body::before { display: none !important; }
+  .no-print, nav, aside, button, .sidebar-trigger {
+    display: none !important;
+  }
+  .print-section {
+    display: block !important;
+    width: 100% !important;
+  }
+  .glass-metallic {
+    background: none !important;
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    color: black !important;
+  }
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    color: black !important;
+  }
+  th, td {
+    border: 1px solid #aaa !important;
+    color: black !important;
+    background: none !important;
+    padding: 8px !important;
+  }
+  .text-white, .text-accent, .text-primary, .text-glow-cyan, .text-glow-red {
+    color: black !important;
+    text-shadow: none !important;
+  }
+  .page-break-after {
+    page-break-after: always;
+  }
+  /* High contrast grid for schedules */
+  .bg-accent\/30, .bg-primary\/30 {
+    background-color: #f0f0f0 !important;
+    border: 2px solid black !important;
+  }
+  .text-muted-foreground {
+    color: #666 !important;
+  }
+}
 /* Water splash motif background */
 body::before {
   content: "";
