@@ -83,7 +83,8 @@ function runSetupCommands() {
     "bun remove lucide-react",
     "bun add lucide-react@0.292.0",
     "bun add papaparse",
-    "bun add date-fns"
+    "bun add date-fns",
+    "bun add zod"
 ];
     
     if (commands.length === 0) {
