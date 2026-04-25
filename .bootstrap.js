@@ -79,7 +79,9 @@ function updateWranglerJsonc() {
 function runSetupCommands() {
     const commands = [
     "bun add papaparse@^5.4.1",
-    "bun add lucide-react@latest"
+    "bun add lucide-react@latest",
+    "bun remove lucide-react",
+    "bun add lucide-react@0.292.0"
 ];
     
     if (commands.length === 0) {
