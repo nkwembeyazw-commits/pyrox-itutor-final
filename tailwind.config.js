@@ -47,6 +47,10 @@ export default {
   			'neon-cyan': '0 0 15px rgba(0, 191, 255, 0.5), 0 0 30px rgba(0, 191, 255, 0.2)',
   			'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
   		},
+  		dropShadow: {
+  			'neon-red': '0 0 10px rgba(255, 23, 68, 0.8)',
+  			'neon-cyan': '0 0 10px rgba(0, 191, 255, 0.8)',
+  		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
