@@ -1,0 +1,26 @@
+export const SUBJECT_LIST = [
+  "Mathematics",
+  "English Language",
+  "English Literature",
+  "Physics",
+  "Chemistry",
+  "Biology",
+  "History",
+  "Geography",
+  "Computer Science",
+  "Business Studies",
+  "Accounting",
+  "Economics",
+  "French",
+  "Spanish",
+  "Art",
+  "Music",
+  "Bible",
+  "Combined Science",
+  "Heritage",
+  "PE & Arts",
+  "Travel",
+  "Ecoz",
+  "Accs"
+] as const;
+export type Subject = typeof SUBJECT_LIST[number];

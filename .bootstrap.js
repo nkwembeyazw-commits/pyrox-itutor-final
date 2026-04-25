@@ -77,15 +77,7 @@ function updateWranglerJsonc() {
 }
 
 function runSetupCommands() {
-    const commands = [
-    "bun add papaparse@^5.4.1",
-    "bun add lucide-react@latest",
-    "bun remove lucide-react",
-    "bun add lucide-react@0.292.0",
-    "bun add papaparse",
-    "bun add date-fns",
-    "bun add zod"
-];
+    const commands = [];
     
     if (commands.length === 0) {
         console.log('⊘ No setup commands to run');
