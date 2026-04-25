@@ -14,6 +14,8 @@ import { AppLayout } from '@/components/layout/AppLayout'
 import { HomePage } from '@/pages/HomePage'
 import { RegisterStudentPage } from '@/pages/RegisterStudentPage'
 import { StudentDetailsPage } from '@/pages/StudentDetailsPage'
+import { RegisterTutorPage } from '@/pages/RegisterTutorPage'
+import { TutorDetailsPage } from '@/pages/TutorDetailsPage'
 const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
@@ -23,10 +25,10 @@ const router = createBrowserRouter([
       { path: "/", element: <HomePage /> },
       { path: "/students/register", element: <RegisterStudentPage /> },
       { path: "/students/details", element: <StudentDetailsPage /> },
-      { path: "/tutors/register", element: <div className="p-8">Tutor Registration Coming Soon</div> },
-      { path: "/tutors/details", element: <div className="p-8">Tutor Details Coming Soon</div> },
-      { path: "/schedules/student", element: <div className="p-8">Student Schedule Coming Soon</div> },
-      { path: "/schedules/tutor", element: <div className="p-8">Tutor Schedule Coming Soon</div> },
+      { path: "/tutors/register", element: <RegisterTutorPage /> },
+      { path: "/tutors/details", element: <TutorDetailsPage /> },
+      { path: "/schedules/student", element: <div className="p-8 text-white text-3xl font-bold">Student Schedule Grid - Coming Phase 3</div> },
+      { path: "/schedules/tutor", element: <div className="p-8 text-white text-3xl font-bold">Tutor Schedule Grid - Coming Phase 3</div> },
     ],
   },
 ]);

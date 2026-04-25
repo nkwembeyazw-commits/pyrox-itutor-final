@@ -3,14 +3,12 @@ import { useQuery } from 'convex/react';
 import { api } from '@convex/_generated/api';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Printer, Download, GraduationCap } from "lucide-react";
+import { Printer, Download, GraduationCap, Database } from "lucide-react";
 import Papa from "papaparse";
 import { format } from "date-fns";
 export function StudentDetailsPage() {
   const students = useQuery(api.pirox.getStudents);
-  const handlePrint = () => {
-    window.print();
-  };
+  const handlePrint = () => window.print();
   const handleExport = () => {
     if (!students) return;
     const data = students.map(s => ({
@@ -25,73 +23,67 @@ export function StudentDetailsPage() {
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", `pirox_students_${format(new Date(), "yyyy-MM-dd")}.csv`);
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
+    link.setAttribute("download", `pyrox_students_${format(new Date(), "yyyy-MM-dd")}.csv`);
     link.click();
-    document.body.removeChild(link);
   };
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="py-8 md:py-10 lg:py-12 space-y-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
-          <div className="flex items-center gap-4">
-            <div className="bg-primary p-3 rounded-xl">
-              <GraduationCap className="h-8 w-8 text-white" />
+      <div className="py-8 md:py-10 lg:py-12 space-y-12">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 print:hidden">
+          <div className="flex items-center gap-6">
+            <div className="bg-accent p-4 rounded-2xl shadow-neon-cyan">
+              <Database className="h-10 w-10 text-background" />
             </div>
-            <h1 className="text-4xl font-bold">Registered Students</h1>
+            <div>
+              <h1 className="text-5xl font-bold text-white font-display tracking-tight text-glow-cyan">Student Registry</h1>
+              <p className="text-muted-foreground text-lg">Real-time enrollment database.</p>
+            </div>
           </div>
           <div className="flex gap-4">
-            <Button onClick={handlePrint} variant="outline" className="h-12 text-lg border-2 border-primary text-primary hover:bg-primary hover:text-white">
-              <Printer className="mr-2 h-5 w-5" /> Print Roster
+            <Button onClick={handlePrint} variant="outline" className="h-14 px-8 text-xl border-accent text-accent hover:bg-accent hover:text-background">
+              <Printer className="mr-3 h-6 w-6" /> Print
             </Button>
-            <Button onClick={handleExport} variant="default" className="h-12 text-lg bg-green-600 hover:bg-green-700">
-              <Download className="mr-2 h-5 w-5" /> Export to CSV
+            <Button onClick={handleExport} className="h-14 px-8 text-xl bg-primary hover:bg-primary/80 shadow-neon-red">
+              <Download className="mr-3 h-6 w-6" /> Export
             </Button>
           </div>
         </div>
-        <div className="bg-white border-2 rounded-xl shadow-lg overflow-hidden">
+        <div className="glass-metallic neon-border-red rounded-3xl overflow-hidden shadow-2xl">
           <Table>
-            <TableHeader className="bg-muted/50">
-              <TableRow className="h-16">
-                <TableHead className="text-lg font-bold">Student Name</TableHead>
-                <TableHead className="text-lg font-bold">Location</TableHead>
-                <TableHead className="text-lg font-bold">Level</TableHead>
-                <TableHead className="text-lg font-bold">Subjects</TableHead>
-                <TableHead className="text-lg font-bold">Enrolled Date</TableHead>
+            <TableHeader className="bg-secondary/60 border-b border-white/10">
+              <TableRow className="h-20 hover:bg-transparent">
+                <TableHead className="text-xl font-bold text-white px-10">Subject Name</TableHead>
+                <TableHead className="text-xl font-bold text-white">Location</TableHead>
+                <TableHead className="text-xl font-bold text-white">Tier</TableHead>
+                <TableHead className="text-xl font-bold text-white">Modules</TableHead>
+                <TableHead className="text-xl font-bold text-white px-10 text-right">Entry Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {!students ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-20 text-xl text-muted-foreground italic">
-                    Loading student records...
-                  </TableCell>
-                </TableRow>
+                <TableRow><TableCell colSpan={5} className="text-center py-32 text-2xl text-muted-foreground animate-pulse">Syncing with mainframe...</TableCell></TableRow>
               ) : students.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-20 text-xl text-muted-foreground italic">
-                    No students registered yet.
-                  </TableCell>
-                </TableRow>
+                <TableRow><TableCell colSpan={5} className="text-center py-32 text-2xl text-muted-foreground italic">Registry is currently empty.</TableCell></TableRow>
               ) : (
                 students.map((student) => (
-                  <TableRow key={student._id} className="h-20 hover:bg-muted/30 transition-colors">
-                    <TableCell className="text-xl font-semibold">{student.name}</TableCell>
-                    <TableCell className="text-lg">{student.location}</TableCell>
-                    <TableCell className="text-lg font-medium">
-                      <span className={`px-4 py-1 rounded-full text-white ${
-                        student.level === 'A Level' ? 'bg-red-500' : 
-                        student.level === 'IGCSE' ? 'bg-blue-500' : 'bg-green-500'
+                  <TableRow key={student._id} className="h-24 hover:bg-white/5 transition-colors border-b border-white/5">
+                    <TableCell className="px-10">
+                      <span className="text-2xl font-bold text-white group-hover:text-accent">{student.name}</span>
+                    </TableCell>
+                    <TableCell className="text-lg text-muted-foreground">{student.location}</TableCell>
+                    <TableCell>
+                      <span className={`px-5 py-2 rounded-full text-sm font-bold shadow-lg ${
+                        student.level === 'A Level' ? 'bg-primary text-white shadow-neon-red' :
+                        student.level === 'IGCSE' ? 'bg-accent text-background shadow-neon-cyan' : 'bg-green-500 text-white'
                       }`}>
                         {student.level}
                       </span>
                     </TableCell>
-                    <TableCell className="text-lg text-muted-foreground max-w-xs truncate">
-                      {student.subjects.join(", ")}
+                    <TableCell className="text-lg text-muted-foreground max-w-md truncate">
+                      {student.subjects.join(" | ")}
                     </TableCell>
-                    <TableCell className="text-lg">
-                      {format(student.createdAt, "MMM dd, yyyy")}
+                    <TableCell className="px-10 text-right text-lg font-mono text-muted-foreground">
+                      {format(student.createdAt, "dd-MM-yyyy")}
                     </TableCell>
                   </TableRow>
                 ))
@@ -102,11 +94,12 @@ export function StudentDetailsPage() {
       </div>
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
-          body { background: white; }
+          body { background: white !important; color: black !important; }
           .print\\:hidden { display: none !important; }
-          table { border-collapse: collapse; width: 100%; }
-          th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-          .max-w-7xl { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+          .glass-metallic { background: none !important; border: 1px solid #000 !important; }
+          th, td { color: black !important; border: 1px solid #ddd !important; padding: 12px !important; }
+          .bg-secondary\\/60 { background: #f0f0f0 !important; }
+          .text-glow-cyan { text-shadow: none !important; }
         }
       `}} />
     </div>

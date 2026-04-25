@@ -1,4 +1,4 @@
-import { GraduationCap, Users, Calendar, UserPlus, ClipboardList, BookOpen } from 'lucide-react';
+import { GraduationCap, Users, Calendar, UserPlus, ClipboardList, BookOpen, Sparkles } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
@@ -6,50 +6,64 @@ import { api } from "../../convex/_generated/api";
 import { SignInForm } from "../components/SignInForm";
 import { SignOutButton } from "../components/SignOutButton";
 const actions = [
-  { title: "Register Student", path: "/students/register", icon: UserPlus, color: "bg-blue-600", desc: "Enroll new students into the system" },
-  { title: "Student Details", path: "/students/details", icon: GraduationCap, color: "bg-blue-700", desc: "View and export student information" },
-  { title: "Register Tutor", path: "/tutors/register", icon: Users, color: "bg-red-500", desc: "Add new tutors to the roster" },
-  { title: "Tutor Details", path: "/tutors/details", icon: ClipboardList, color: "bg-red-600", desc: "Manage tutor rates and assignments" },
-  { title: "Student Schedule", path: "/schedules/student", icon: Calendar, color: "bg-blue-500", desc: "Set weekly timetables for students" },
-  { title: "Tutor Schedule", path: "/schedules/tutor", icon: BookOpen, color: "bg-red-700", desc: "Assign specific time slots to tutors" },
+  { title: "Register Student", path: "/students/register", icon: UserPlus, color: "bg-accent", border: "neon-border-cyan", desc: "Enroll new futuristic learners" },
+  { title: "Student Details", path: "/students/details", icon: GraduationCap, color: "bg-accent", border: "neon-border-cyan", desc: "Monitor student growth & data" },
+  { title: "Register Tutor", path: "/tutors/register", icon: Users, color: "bg-primary", border: "neon-border-red", desc: "Onboard expert knowledge leaders" },
+  { title: "Tutor Details", path: "/tutors/details", icon: ClipboardList, color: "bg-primary", border: "neon-border-red", desc: "Review expert rates & rosters" },
+  { title: "Student Schedule", path: "/schedules/student", icon: Calendar, color: "bg-accent", border: "neon-border-cyan", desc: "Map out the journey of success" },
+  { title: "Tutor Schedule", path: "/schedules/tutor", icon: BookOpen, color: "bg-primary", border: "neon-border-red", desc: "Allocate expert time-slots" },
 ];
 export function HomePage() {
   const user = useQuery(api.auth.loggedInUser);
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="py-8 md:py-10 lg:py-12 space-y-12">
-        <div className="flex justify-between items-center">
-          <div className="space-y-2">
-            <h1 className="text-5xl font-bold tracking-tight text-primary">
-              Welcome to <span className="text-accent">PiroX iTutor</span>
+      <div className="py-8 md:py-10 lg:py-12 space-y-16">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 text-primary animate-bounce">
+              <Sparkles className="h-6 w-6" />
+              <span className="text-sm font-bold uppercase tracking-[0.3em]">Ignite Knowledge. Inspire Futures.</span>
+            </div>
+            <h1 className="text-6xl md:text-8xl font-display font-extrabold tracking-tighter text-white">
+              PyroX <span className="text-primary text-glow-red">iTutor</span>
             </h1>
-            <p className="text-xl text-muted-foreground">Comprehensive Management for Tutoring Excellence.</p>
+            <p className="text-2xl text-muted-foreground font-medium max-w-2xl">The elite command center for educational excellence and professional scheduling.</p>
           </div>
           <Authenticated>
-            <div className="flex items-center gap-4">
-              <span className="font-semibold text-lg">{user?.email}</span>
+            <div className="glass-metallic p-6 rounded-2xl flex items-center gap-6 border-accent/20">
+              <div className="flex flex-col items-end">
+                <span className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Active Operator</span>
+                <span className="font-bold text-xl text-accent">{user?.email?.split('@')[0]}</span>
+              </div>
               <SignOutButton />
             </div>
           </Authenticated>
         </div>
         <Unauthenticated>
           <div className="max-w-md mx-auto">
-            <Card className="p-8 shadow-xl border-2">
+            <Card className="glass-metallic neon-border-red p-10 shadow-2xl">
+              <div className="text-center space-y-2 mb-8">
+                <h2 className="text-3xl font-bold text-white">Access Portal</h2>
+                <p className="text-muted-foreground">Authorized personnel only.</p>
+              </div>
               <SignInForm />
             </Card>
           </div>
         </Unauthenticated>
         <Authenticated>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {actions.map((action) => (
-              <Link key={action.path} to={action.path}>
-                <Card className="h-full hover:shadow-2xl transition-all duration-300 group cursor-pointer border-2 hover:border-primary/50">
-                  <CardContent className="p-8 flex flex-col items-center text-center space-y-4">
-                    <div className={`${action.color} p-5 rounded-2xl text-white shadow-lg group-hover:scale-110 transition-transform`}>
-                      <action.icon className="h-10 w-10" />
+              <Link key={action.path} to={action.path} className="group">
+                <Card className={`h-full glass-metallic ${action.border} border-2 hover:scale-[1.03] transition-all duration-500 overflow-hidden`}>
+                  <CardContent className="p-10 flex flex-col items-center text-center space-y-6 relative">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                    <div className={`${action.color} p-6 rounded-3xl text-white shadow-2xl transform group-hover:rotate-[360deg] transition-transform duration-700`}>
+                      <action.icon className="h-12 w-12" />
                     </div>
-                    <h3 className="text-2xl font-bold">{action.title}</h3>
-                    <p className="text-muted-foreground text-lg">{action.desc}</p>
+                    <div className="space-y-2">
+                      <h3 className="text-3xl font-display font-bold text-white group-hover:text-accent transition-colors">{action.title}</h3>
+                      <p className="text-muted-foreground text-lg leading-relaxed">{action.desc}</p>
+                    </div>
                   </CardContent>
                 </Card>
               </Link>

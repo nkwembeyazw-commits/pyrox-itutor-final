@@ -16,32 +16,44 @@ export default {
   			'6xl': ['3.75rem', { lineHeight: '1' }],
   		},
   		colors: {
-  			background: 'hsl(var(--background))',
-  			foreground: 'hsl(var(--foreground))',
+  			background: '#0a0f2e', // Navy
+  			foreground: '#ffffff',
   			primary: {
-  				DEFAULT: '#1d4ed8', // Vibrant Blue
+  				DEFAULT: '#ff1744', // Neon Red
   				foreground: '#ffffff'
   			},
   			accent: {
-  				DEFAULT: '#ef4444', // Vibrant Red
+  				DEFAULT: '#00bfff', // Cyan Glow
+  				foreground: '#0a0f2e'
+  			},
+  			secondary: {
+  				DEFAULT: '#1e3a8a', // Deep Navy
   				foreground: '#ffffff'
   			},
-  			border: 'hsl(var(--border))',
-  			input: 'hsl(var(--input))',
-  			ring: '#1d4ed8',
+  			border: '#1e3a8a',
+  			input: '#1e3a8a',
+  			ring: '#00bfff',
   			muted: {
-  				DEFAULT: 'hsl(var(--muted))',
-  				foreground: 'hsl(var(--muted-foreground))'
+  				DEFAULT: '#16204d',
+  				foreground: '#94a3b8'
   			},
   			card: {
-  				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
+  				DEFAULT: 'rgba(30, 58, 138, 0.4)',
+  				foreground: '#ffffff'
   			}
+  		},
+  		boxShadow: {
+  			'neon-red': '0 0 15px rgba(255, 23, 68, 0.5), 0 0 30px rgba(255, 23, 68, 0.2)',
+  			'neon-cyan': '0 0 15px rgba(0, 191, 255, 0.5), 0 0 30px rgba(0, 191, 255, 0.2)',
+  			'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
+  		},
+  		backgroundImage: {
+  			'metallic-gradient': 'linear-gradient(135deg, #1e3a8a 0%, #0a0f2e 50%, #ff1744 100%)',
   		}
   	}
   },

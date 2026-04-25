@@ -27,4 +27,15 @@ export default defineSchema({
     subject: v.optional(v.string()),
     notes: v.optional(v.string()),
   }).index("by_owner", ["ownerId"]),
+  files: defineTable({
+    userId: v.id("users"),
+    storageId: v.id("_storage"),
+    filename: v.string(),
+    mimeType: v.string(),
+    size: v.number(),
+    description: v.optional(v.string()),
+    uploadedAt: v.number(),
+  })
+    .index("by_userId_uploadedAt", ["userId", "uploadedAt"])
+    .index("by_userId_storageId", ["userId", "storageId"]),
 });
