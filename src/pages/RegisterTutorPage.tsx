@@ -20,9 +20,9 @@ const tutorSchema = z.object({
   name: z.string().min(2, "Name is required"),
   contact: z.string().min(5, "Contact info is required"),
   mode: z.string().min(1, "Mode is required"),
-  rate: z.coerce.number().positive("Rate must be positive"),
+  rate: z.number().positive("Rate must be positive"),
   subjects: z.array(z.string()).min(1, "Select at least one subject"),
-  studentIds: z.array(z.string()).default([]),
+  studentIds: z.array(z.string()),
 });
 type TutorForm = z.infer<typeof tutorSchema>;
 export function RegisterTutorPage() {
@@ -40,8 +40,8 @@ export function RegisterTutorPage() {
       studentIds: []
     }
   });
-  const selectedSubjects = watch("subjects") || [];
-  const selectedStudents = watch("studentIds") || [];
+  const selectedSubjects = watch("subjects");
+  const selectedStudents = watch("studentIds");
   const onSubmit = async (data: TutorForm) => {
     try {
       await createTutor({
@@ -95,7 +95,7 @@ export function RegisterTutorPage() {
                 </div>
                 <div className="space-y-3">
                   <Label className="text-xl font-bold text-accent">Credit Rate ($/hr)</Label>
-                  <Input type="number" {...register("rate")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="0.00" />
+                  <Input type="number" {...register("rate", { valueAsNumber: true })} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="0.00" />
                   {errors.rate && <p className="text-primary font-semibold">{errors.rate.message}</p>}
                 </div>
               </div>

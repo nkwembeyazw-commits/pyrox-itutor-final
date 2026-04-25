@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
 export const createStudent = mutation({
   args: {
     name: v.string(),
@@ -7,6 +8,7 @@ export const createStudent = mutation({
     level: v.string(),
     subjects: v.array(v.string()),
   },
+  returns: v.id("students"),
   handler: async (ctx, args) => {
     return await ctx.db.insert("students", {
       ...args,
@@ -22,13 +24,16 @@ export const updateStudent = mutation({
     level: v.string(),
     subjects: v.array(v.string()),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
     const { id, ...updates } = args;
     await ctx.db.patch(id, updates);
+    return null;
   },
 });
 export const deleteStudent = mutation({
   args: { id: v.id("students") },
+  returns: v.null(),
   handler: async (ctx, args) => {
     await ctx.db.delete(args.id);
     const schedules = await ctx.db
@@ -38,6 +43,7 @@ export const deleteStudent = mutation({
     for (const s of schedules) {
       await ctx.db.delete(s._id);
     }
+    return null;
   },
 });
 export const getStudents = query({
@@ -61,6 +67,7 @@ export const createTutor = mutation({
     studentIds: v.array(v.id("students")),
     rate: v.number(),
   },
+  returns: v.id("tutors"),
   handler: async (ctx, args) => {
     return await ctx.db.insert("tutors", {
       ...args,
@@ -89,11 +96,13 @@ export const upsertScheduleSlot = mutation({
     subject: v.optional(v.string()),
     notes: v.optional(v.string()),
   },
+  returns: v.id("schedules"),
   handler: async (ctx, args) => {
     const existing = await ctx.db
       .query("schedules")
-      .withIndex("by_owner", (q) => q.eq("ownerId", args.ownerId))
-      .filter((q) => q.and(q.eq(q.field("day"), args.day), q.eq(q.field("timeSlot"), args.timeSlot)))
+      .withIndex("by_owner_day_time", (q) => 
+        q.eq("ownerId", args.ownerId).eq("day", args.day).eq("timeSlot", args.timeSlot)
+      )
       .unique();
     if (existing) {
       await ctx.db.patch(existing._id, {
@@ -117,7 +126,9 @@ export const getSchedule = query({
 });
 export const deleteScheduleSlot = mutation({
   args: { slotId: v.id("schedules") },
+  returns: v.null(),
   handler: async (ctx, args) => {
     await ctx.db.delete(args.slotId);
+    return null;
   },
 });

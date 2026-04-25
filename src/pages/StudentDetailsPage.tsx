@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import Papa from "papaparse";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { Id } from '@convex/_generated/dataModel';
+import { Id, Doc } from '@convex/_generated/dataModel';
 const SUBJECT_LIST = [
   "Mathematics", "English Language", "English Literature", "Physics", "Chemistry",
   "Biology", "History", "Geography", "Computer Science", "Business Studies",
@@ -22,8 +22,9 @@ export function StudentDetailsPage() {
   const students = useQuery(api.pirox.getStudents);
   const updateStudent = useMutation(api.pirox.updateStudent);
   const deleteStudent = useMutation(api.pirox.deleteStudent);
-  const [editingStudent, setEditingStudent] = useState<any>(null);
+  const [editingStudent, setEditingStudent] = useState<Doc<"students"> | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const handlePrint = () => window.print();
   const handleExport = () => {
     if (!students) return;
@@ -44,9 +45,10 @@ export function StudentDetailsPage() {
   };
   const handleEditSave = async () => {
     if (!editingStudent) return;
+    setIsUpdating(true);
     try {
       await updateStudent({
-        id: editingStudent._id as Id<"students">,
+        id: editingStudent._id,
         name: editingStudent.name,
         location: editingStudent.location,
         level: editingStudent.level,
@@ -54,8 +56,11 @@ export function StudentDetailsPage() {
       });
       toast.success("Registry updated.");
       setEditDialogOpen(false);
+      setEditingStudent(null);
     } catch (e) {
       toast.error("Update failed.");
+    } finally {
+      setIsUpdating(false);
     }
   };
   const handleDelete = async (id: Id<"students">) => {
@@ -159,8 +164,7 @@ export function StudentDetailsPage() {
             </TableBody>
           </Table>
         </div>
-        {/* Inline Edit Dialog */}
-        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <Dialog open={editDialogOpen} onOpenChange={(open) => { if (!open) setEditingStudent(null); setEditDialogOpen(open); }}>
           <DialogContent className="glass-metallic neon-border-cyan border-2 sm:max-w-[700px] p-8 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-3xl font-bold text-white mb-6">Modify Learner Data</DialogTitle>
@@ -211,9 +215,10 @@ export function StudentDetailsPage() {
               </div>
             )}
             <DialogFooter className="mt-8">
-              <Button onClick={() => setEditDialogOpen(false)} variant="outline" className="h-16 px-8 border-white/10">Abort</Button>
-              <Button onClick={handleEditSave} className="h-16 px-12 bg-accent text-background font-bold shadow-neon-cyan">
-                <Check className="mr-2" /> Commit Updates
+              <Button onClick={() => setEditDialogOpen(false)} variant="outline" className="h-16 px-8 border-white/10" disabled={isUpdating}>Abort</Button>
+              <Button onClick={handleEditSave} className="h-16 px-12 bg-accent text-background font-bold shadow-neon-cyan" disabled={isUpdating}>
+                {isUpdating ? <div className="h-5 w-5 animate-spin border-2 border-background border-t-transparent rounded-full mr-2" /> : <Check className="mr-2" />}
+                Commit Updates
               </Button>
             </DialogFooter>
           </DialogContent>

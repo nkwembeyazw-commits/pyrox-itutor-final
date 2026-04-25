@@ -26,7 +26,9 @@ export default defineSchema({
     timeSlot: v.string(), // e.g., "08:00 - 09:00"
     subject: v.optional(v.string()),
     notes: v.optional(v.string()),
-  }).index("by_owner", ["ownerId"]),
+  })
+    .index("by_owner", ["ownerId"])
+    .index("by_owner_day_time", ["ownerId", "day", "timeSlot"]),
   files: defineTable({
     userId: v.id("users"),
     storageId: v.id("_storage"),
