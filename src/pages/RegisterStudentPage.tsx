@@ -14,14 +14,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import { UserPlus, Sparkles, ArrowLeft, CreditCard } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { SUBJECT_LIST } from '@/lib/constants';
-const studentSchema = z.object({
-  name: z.string().min(2, "Name is required"),
-  location: z.string().min(2, "Location is required"),
-  level: z.string().min(1, "Academic level is required"),
-  subjects: z.array(z.string()).min(1, "Select at least one subject"),
-  lastPaidDate: z.string().min(1, "Initial payment date is required"),
-  paymentInterval: z.union([v.literal("weekly"), v.literal("monthly")]),
-});
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
   location: z.string().min(2, "Location is required"),
@@ -36,13 +28,13 @@ export function RegisterStudentPage() {
   const navigate = useNavigate();
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<StudentFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { 
-      name: "", 
-      location: "", 
-      level: "", 
-      subjects: [], 
+    defaultValues: {
+      name: "",
+      location: "",
+      level: "",
+      subjects: [],
       lastPaidDate: new Date().toISOString().split('T')[0],
-      paymentInterval: "monthly" 
+      paymentInterval: "monthly"
     }
   });
   const watchedSubjects = watch("subjects");

@@ -15,23 +15,29 @@ import { Link } from 'react-router-dom';
 function ScheduleReport({ studentId, studentName, level }: { studentId: Id<"students">, studentName: string, level: string }) {
   const schedule = useQuery(api.pyrox.getSchedule, { ownerId: studentId }) ?? [];
   return (
-    <div className="mb-20 page-break-after border-b border-gray-300 pb-12">
-      <div className="flex justify-between items-end border-b-4 border-black pb-4 mb-8">
-        <div className="flex items-center gap-4">
-          <BrandLogo variant="icon" size={60} />
+    <div className="page-break mb-12 p-4 text-black">
+      <div className="flex justify-between items-center border-b-2 border-black pb-6 mb-8">
+        <div className="flex items-center gap-6">
+          <BrandLogo variant="icon" size={80} className="invert" />
           <div>
-            <h2 className="text-3xl font-extrabold text-black uppercase tracking-tighter">PyroX-iTutor Student Schedule</h2>
-            <p className="text-xs font-mono text-gray-500 uppercase tracking-widest mt-1">Learner ID: {studentId}</p>
+            <h2 className="text-4xl font-black uppercase tracking-tighter">PyroX Student Schedule</h2>
+            <p className="text-sm font-mono uppercase tracking-[0.3em] text-gray-500">Learner Protocol ID: {studentId.slice(0, 8)}</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-black text-black uppercase">{studentName}</p>
-          <p className="text-sm font-bold uppercase text-gray-500 tracking-widest">{level} Academic Tier</p>
+          <p className="text-3xl font-black uppercase">{studentName}</p>
+          <div className="flex items-center justify-end gap-2 mt-1">
+            <span className="px-3 py-1 bg-black text-white text-xs font-bold uppercase tracking-widest rounded">{level} Tier</span>
+          </div>
         </div>
       </div>
-      <ScheduleGrid slots={schedule} onCellClick={() => {}} accentColor="cyan" />
-      <div className="mt-8 text-center">
-        <p className="text-[10px] uppercase font-bold tracking-[0.4em] text-gray-400">Ignite Knowledge. Inspire Futures.</p>
+      <div className="border border-black">
+        <ScheduleGrid slots={schedule} onCellClick={() => {}} accentColor="cyan" />
+      </div>
+      <div className="mt-12 flex justify-between items-center text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em]">
+        <span>Generated: {new Date().toLocaleDateString()}</span>
+        <span>Ignite Knowledge. Inspire Futures.</span>
+        <span>© PyroX Systems</span>
       </div>
     </div>
   );
@@ -128,10 +134,10 @@ export function StudentSchedulePage() {
             </div>
             <div className="flex gap-2 shrink-0">
               <Button onClick={() => window.print()} disabled={!selectedStudentId} className="h-14 px-4 bg-accent text-background font-black shadow-neon-cyan flex-1 transition-transform active:scale-95 uppercase text-xs">
-                <Printer className="mr-2 h-4 w-4" /> Print My
+                <Printer className="mr-2 h-4 w-4" /> Print Current
               </Button>
               <Button onClick={() => setIsPrintingAll(true)} variant="outline" className="h-14 px-4 border-accent text-accent font-black hover:bg-accent/10 flex-1 transition-transform active:scale-95 uppercase text-xs">
-                <Files className="mr-2 h-4 w-4" /> Print All
+                <Files className="mr-2 h-4 w-4" /> Print Batch
               </Button>
             </div>
           </div>
@@ -197,7 +203,7 @@ export function StudentSchedulePage() {
           </DialogContent>
         </Dialog>
       </div>
-      <div className="hidden print:block print-section p-10 bg-white text-black">
+      <div className="hidden print:block print-section p-0 bg-white">
         {isPrintingAll ? (
           students.map(s => (
             <ScheduleReport

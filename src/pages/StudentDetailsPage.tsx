@@ -22,21 +22,26 @@ export function StudentDetailsPage() {
   const [editingStudent, setEditingStudent] = useState<Doc<"students"> | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const calculateNextDue = (lastPaid: number, interval: "weekly" | "monthly") => {
-    return addDays(new Date(lastPaid), interval === "weekly" ? 7 : 30).getTime();
+  const calculateNextDue = (lastPaid: number | undefined, interval: "weekly" | "monthly" | undefined, enrollmentDate: number) => {
+    const base = lastPaid || enrollmentDate;
+    const period = interval || "monthly";
+    return addDays(new Date(base), period === "weekly" ? 7 : 30).getTime();
   };
   const handleExport = () => {
     if (!students) return;
-    const data = students.map(s => ({
-      Name: s.name,
-      Location: s.location,
-      Level: s.level,
-      Subjects: s.subjects.join(", "),
-      "Last Paid": format(s.lastPaidDate, "yyyy-MM-dd"),
-      Interval: s.paymentInterval,
-      "Next Due": format(calculateNextDue(s.lastPaidDate, s.paymentInterval), "yyyy-MM-dd"),
-      "Registered On": format(s.createdAt, "PPP")
-    }));
+    const data = students.map(s => {
+      const nextDueTs = calculateNextDue(s.lastPaidDate, s.paymentInterval, s.createdAt);
+      return {
+        Name: s.name,
+        Location: s.location,
+        Level: s.level,
+        Subjects: s.subjects.join(", "),
+        "Last Paid": s.lastPaidDate ? format(s.lastPaidDate, "yyyy-MM-dd") : "No Record",
+        Interval: s.paymentInterval || "N/A",
+        "Next Due": format(nextDueTs, "yyyy-MM-dd"),
+        "Registered On": format(s.createdAt, "PPP")
+      };
+    });
     const csv = Papa.unparse(data);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -58,8 +63,8 @@ export function StudentDetailsPage() {
         location: editingStudent.location,
         level: editingStudent.level,
         subjects: editingStudent.subjects,
-        lastPaidDate: editingStudent.lastPaidDate,
-        paymentInterval: editingStudent.paymentInterval,
+        lastPaidDate: editingStudent.lastPaidDate || editingStudent.createdAt,
+        paymentInterval: editingStudent.paymentInterval || "monthly",
       });
       toast.success("Registry updated.");
       setEditDialogOpen(false);
@@ -119,7 +124,7 @@ export function StudentDetailsPage() {
                   <TableRow><TableCell colSpan={5} className="text-center py-32 text-xl text-muted-foreground italic font-mono">Empty database link.</TableCell></TableRow>
                 ) : (
                   students.map((student) => {
-                    const nextDue = calculateNextDue(student.lastPaidDate, student.paymentInterval);
+                    const nextDue = calculateNextDue(student.lastPaidDate, student.paymentInterval, student.createdAt);
                     const isOverdue = nextDue < Date.now();
                     return (
                       <TableRow key={student._id} className="h-24 hover:bg-white/5 transition-colors border-b border-white/5 group">
@@ -135,7 +140,7 @@ export function StudentDetailsPage() {
                           </span>
                         </TableCell>
                         <TableCell className="text-sm md:text-lg text-muted-foreground font-medium font-mono">
-                          {format(student.lastPaidDate, "MMM dd, yyyy")}
+                          {student.lastPaidDate ? format(student.lastPaidDate, "MMM dd, yyyy") : "No History"}
                         </TableCell>
                         <TableCell>
                           <span className={isOverdue ? "text-primary font-black drop-shadow-neon-red" : "text-accent font-bold"}>
@@ -206,17 +211,17 @@ export function StudentDetailsPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label className="text-[10px] text-muted-foreground font-bold uppercase">Last Payment Date</Label>
-                      <Input 
-                        type="date" 
-                        value={new Date(editingStudent.lastPaidDate).toISOString().split('T')[0]} 
-                        onChange={(e) => setEditingStudent({...editingStudent, lastPaidDate: new Date(e.target.value).getTime()})} 
-                        className="h-12 bg-secondary/50 border-white/10 text-white font-bold" 
+                      <Input
+                        type="date"
+                        value={editingStudent.lastPaidDate ? new Date(editingStudent.lastPaidDate).toISOString().split('T')[0] : ""}
+                        onChange={(e) => setEditingStudent({...editingStudent, lastPaidDate: new Date(e.target.value).getTime()})}
+                        className="h-12 bg-secondary/50 border-white/10 text-white font-bold"
                       />
                     </div>
                     <div className="space-y-2">
                       <Label className="text-[10px] text-muted-foreground font-bold uppercase">Billing Interval</Label>
-                      <select 
-                        value={editingStudent.paymentInterval} 
+                      <select
+                        value={editingStudent.paymentInterval || "monthly"}
                         onChange={(e) => setEditingStudent({...editingStudent, paymentInterval: e.target.value as "weekly" | "monthly"})}
                         className="h-12 w-full rounded-md border-white/10 bg-secondary/50 px-2 text-white font-bold"
                       >

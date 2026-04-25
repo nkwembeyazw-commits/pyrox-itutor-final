@@ -15,23 +15,29 @@ import { Link } from 'react-router-dom';
 function TutorScheduleReport({ tutorId, tutorName, mode }: { tutorId: Id<"tutors">, tutorName: string, mode: string }) {
   const schedule = useQuery(api.pyrox.getSchedule, { ownerId: tutorId }) ?? [];
   return (
-    <div className="mb-20 page-break-after border-b border-gray-300 pb-12">
-      <div className="flex justify-between items-end border-b-4 border-black pb-4 mb-8">
-        <div className="flex items-center gap-4">
-          <BrandLogo variant="icon" size={60} />
+    <div className="page-break mb-12 p-4 text-black">
+      <div className="flex justify-between items-center border-b-2 border-black pb-6 mb-8">
+        <div className="flex items-center gap-6">
+          <BrandLogo variant="icon" size={80} className="invert" />
           <div>
-            <h2 className="text-3xl font-extrabold text-black uppercase tracking-tighter">PyroX-iTutor Expert Dispatch</h2>
-            <p className="text-xs font-mono text-gray-500 uppercase tracking-widest mt-1">Leader ID: {tutorId}</p>
+            <h2 className="text-4xl font-black uppercase tracking-tighter">PyroX Expert Dispatch</h2>
+            <p className="text-sm font-mono uppercase tracking-[0.3em] text-gray-500">Expert ID: {tutorId.slice(0, 8)}</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-black text-black uppercase">{tutorName}</p>
-          <p className="text-sm font-bold uppercase text-gray-500 tracking-widest">{mode} Instruction Protocol</p>
+          <p className="text-3xl font-black uppercase">{tutorName}</p>
+          <div className="flex items-center justify-end gap-2 mt-1">
+            <span className="px-3 py-1 bg-black text-white text-xs font-bold uppercase tracking-widest rounded">{mode} Protocol</span>
+          </div>
         </div>
       </div>
-      <ScheduleGrid slots={schedule} onCellClick={() => {}} accentColor="red" />
-      <div className="mt-8 text-center">
-        <p className="text-[10px] uppercase font-bold tracking-[0.4em] text-gray-400">Ignite Knowledge. Inspire Futures.</p>
+      <div className="border border-black">
+        <ScheduleGrid slots={schedule} onCellClick={() => {}} accentColor="red" />
+      </div>
+      <div className="mt-12 flex justify-between items-center text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em]">
+        <span>Report Auth: {new Date().toLocaleDateString()}</span>
+        <span>Ignite Knowledge. Inspire Futures.</span>
+        <span>© PyroX Systems</span>
       </div>
     </div>
   );
@@ -158,10 +164,13 @@ export function TutorSchedulePage() {
             </div>
             <div className="flex gap-2 shrink-0">
               <Button onClick={sendEmail} disabled={!selectedTutorId} className="h-14 px-4 bg-white text-primary font-black shadow-xl flex-1 transition-transform active:scale-95 uppercase text-xs">
-                <Mail className="mr-2 h-4 w-4" /> Email My
+                <Mail className="mr-2 h-4 w-4" /> Email Dispatch
               </Button>
               <Button onClick={() => window.print()} disabled={!selectedTutorId} className="h-14 px-4 bg-primary text-white font-black shadow-neon-red flex-1 transition-transform active:scale-95 uppercase text-xs">
-                <Printer className="mr-2 h-4 w-4" /> Print My
+                <Printer className="mr-2 h-4 w-4" /> Print Dispatch
+              </Button>
+              <Button onClick={() => setIsPrintingAll(true)} variant="outline" className="h-14 px-4 border-primary text-primary font-black hover:bg-primary/10 flex-1 transition-transform active:scale-95 uppercase text-xs">
+                <Files className="mr-2 h-4 w-4" /> Print Batch
               </Button>
             </div>
           </div>
@@ -241,7 +250,7 @@ export function TutorSchedulePage() {
           </DialogContent>
         </Dialog>
       </div>
-      <div className="hidden print:block print-section p-10 bg-white text-black">
+      <div className="hidden print:block print-section p-0 bg-white">
         {isPrintingAll ? (
           tutors.map(t => (
             <TutorScheduleReport

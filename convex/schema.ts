@@ -9,8 +9,8 @@ export default defineSchema({
     level: v.string(), // Primary, IGCSE, A Level
     subjects: v.array(v.string()),
     createdAt: v.number(),
-    lastPaidDate: v.number(),
-    paymentInterval: v.union(v.literal("weekly"), v.literal("monthly")),
+    lastPaidDate: v.optional(v.number()),
+    paymentInterval: v.optional(v.union(v.literal("weekly"), v.literal("monthly"))),
   }),
   tutors: defineTable({
     name: v.string(),
