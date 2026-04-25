@@ -16,7 +16,7 @@ function ScheduleReport({ studentId, studentName, level }: { studentId: Id<"stud
     <div className="mb-20 page-break-after">
       <div className="flex justify-between items-end border-b-2 border-black pb-4 mb-6">
         <div>
-          <h2 className="text-3xl font-bold text-black uppercase tracking-tighter">Student Journey Report</h2>
+          <h2 className="text-3xl font-bold text-black uppercase tracking-tighter">iTutor Student Schedule</h2>
           <p className="text-sm font-mono text-gray-600">ID: {studentId}</p>
         </div>
         <div className="text-right">
@@ -168,18 +168,18 @@ export function StudentSchedulePage() {
       </div>
       <div className="hidden print:block print-section p-10 bg-white text-black">
         {selectedStudentId && !document.body.classList.contains('print-all-mode') ? (
-          <ScheduleReport 
-            studentId={selectedStudentId} 
-            studentName={selectedStudent?.name || "Learner"} 
-            level={selectedStudent?.level || "Core Tier"} 
+          <ScheduleReport
+            studentId={selectedStudentId}
+            studentName={selectedStudent?.name || "Learner"}
+            level={selectedStudent?.level || "Core Tier"}
           />
         ) : (
           students.map(s => (
-            <ScheduleReport 
-              key={s._id} 
-              studentId={s._id} 
-              studentName={s.name} 
-              level={s.level} 
+            <ScheduleReport
+              key={s._id}
+              studentId={s._id}
+              studentName={s.name}
+              level={s.level}
             />
           ))
         )}
