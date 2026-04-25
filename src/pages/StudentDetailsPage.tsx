@@ -4,7 +4,7 @@ import { api } from '@convex/_generated/api';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Printer, Download, Database, Edit, Trash2, Check } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -174,9 +174,12 @@ export function StudentDetailsPage() {
           </Table>
         </div>
         <Dialog open={editDialogOpen} onOpenChange={(open) => { if (!open) setEditingStudent(null); setEditDialogOpen(open); }}>
-          <DialogContent className="glass-metallic neon-border-cyan border-2 sm:max-w-[700px] p-8 max-h-[90vh] overflow-y-auto">
+          <DialogContent aria-describedby="student-edit-desc" className="glass-metallic neon-border-cyan border-2 sm:max-w-[700px] p-8 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-3xl font-bold text-white mb-6 uppercase tracking-tighter">Modify Learner Profile</DialogTitle>
+              <DialogDescription id="student-edit-desc" className="text-muted-foreground font-medium text-lg">
+                Modify learner profile details for selected student.
+              </DialogDescription>
             </DialogHeader>
             {editingStudent && (
               <div className="space-y-8">
