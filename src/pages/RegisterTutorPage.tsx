@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { Users, Sparkles } from 'lucide-react';
 import { Id } from '@convex/_generated/dataModel';
+import { BrandLogo } from '@/components/BrandLogo';
 const SUBJECTS = [
   "Mathematics", "Physics", "Chemistry", "Biology", "English", "History", "Computer Science", "Business"
 ];
@@ -26,8 +27,8 @@ const tutorSchema = z.object({
 });
 type TutorForm = z.infer<typeof tutorSchema>;
 export function RegisterTutorPage() {
-  const createTutor = useMutation(api.pirox.createTutor);
-  const students = useQuery(api.pirox.getStudents) ?? [];
+  const createTutor = useMutation(api.pyrox.createTutor);
+  const students = useQuery(api.pyrox.getStudents) ?? [];
   const navigate = useNavigate();
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<TutorForm>({
     resolver: zodResolver(tutorSchema),
@@ -61,46 +62,49 @@ export function RegisterTutorPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8 md:py-10 lg:py-12">
-        <Card className="glass-metallic neon-border-red">
-          <CardHeader className="bg-primary p-8 rounded-t-lg border-b border-white/10">
-            <div className="flex items-center gap-4">
-              <Users className="h-10 w-10 text-white" />
-              <CardTitle className="text-4xl text-white font-display tracking-tight text-glow-red">Tutor Registration</CardTitle>
+        <Card className="glass-metallic neon-border-red border-2 overflow-hidden shadow-2xl transition-all duration-500">
+          <CardHeader className="bg-primary p-8 border-b border-white/10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Users className="h-10 w-10 text-white" />
+                <CardTitle className="text-4xl text-white font-display tracking-tight text-glow-red uppercase">PyroX Tutor Commissioning</CardTitle>
+              </div>
+              <BrandLogo variant="icon" size={40} />
             </div>
           </CardHeader>
           <CardContent className="p-8 space-y-10">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div className="space-y-3">
-                  <Label className="text-xl font-bold text-accent flex items-center gap-2">
+                  <Label className="text-xl font-bold text-accent flex items-center gap-2 uppercase tracking-widest text-xs">
                     <Sparkles className="h-4 w-4" /> Full Name
                   </Label>
-                  <Input {...register("name")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="Expert Name" />
-                  {errors.name && <p className="text-primary font-semibold">{errors.name.message}</p>}
+                  <Input {...register("name")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white font-bold" placeholder="Expert Name" />
+                  {errors.name && <p className="text-primary font-bold text-xs uppercase italic">{errors.name.message}</p>}
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-xl font-bold text-accent">Communication Link</Label>
-                  <Input {...register("contact")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="Email / ID" />
-                  {errors.contact && <p className="text-primary font-semibold">{errors.contact.message}</p>}
+                  <Label className="text-xl font-bold text-accent uppercase tracking-widest text-xs">Communication Link</Label>
+                  <Input {...register("contact")} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white font-bold" placeholder="Email / ID Protocol" />
+                  {errors.contact && <p className="text-primary font-bold text-xs uppercase italic">{errors.contact.message}</p>}
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-xl font-bold text-accent">Instruction Mode</Label>
-                  <select {...register("mode")} className="flex h-16 w-full rounded-md border-accent/30 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent">
+                  <Label className="text-xl font-bold text-accent uppercase tracking-widest text-xs">Instruction Mode</Label>
+                  <select {...register("mode")} className="flex h-16 w-full rounded-md border-accent/30 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent font-bold">
                     <option value="" className="bg-background">Select Mode</option>
                     <option value="Online" className="bg-background">Online</option>
                     <option value="In-person" className="bg-background">In-person</option>
                     <option value="Hybrid" className="bg-background">Hybrid</option>
                   </select>
-                  {errors.mode && <p className="text-primary font-semibold">{errors.mode.message}</p>}
+                  {errors.mode && <p className="text-primary font-bold text-xs uppercase italic">{errors.mode.message}</p>}
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-xl font-bold text-accent">Credit Rate ($/hr)</Label>
-                  <Input type="number" {...register("rate", { valueAsNumber: true })} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white" placeholder="0.00" />
-                  {errors.rate && <p className="text-primary font-semibold">{errors.rate.message}</p>}
+                  <Label className="text-xl font-bold text-accent uppercase tracking-widest text-xs">Credit Rate ($/hr)</Label>
+                  <Input type="number" {...register("rate", { valueAsNumber: true })} className="h-16 text-lg bg-secondary/50 border-accent/30 focus:border-accent text-white font-bold" placeholder="0.00" />
+                  {errors.rate && <p className="text-primary font-bold text-xs uppercase italic">{errors.rate.message}</p>}
                 </div>
               </div>
               <div className="space-y-6">
-                <Label className="text-xl font-bold text-primary uppercase tracking-widest">Core Disciplines</Label>
+                <Label className="text-xl font-bold text-primary uppercase tracking-[0.2em] text-xs">Core Knowledge Disciplines</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {SUBJECTS.map((subject) => (
                     <div key={subject} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all cursor-pointer ${selectedSubjects.includes(subject) ? 'bg-primary/20 border-primary shadow-neon-red' : 'bg-secondary/30 border-white/10'}`}>
@@ -113,14 +117,14 @@ export function RegisterTutorPage() {
                         }}
                         className="h-6 w-6"
                       />
-                      <Label htmlFor={`tutor-subject-${subject}`} className="text-lg font-medium cursor-pointer flex-1">{subject}</Label>
+                      <Label htmlFor={`tutor-subject-${subject}`} className="text-lg font-bold cursor-pointer flex-1 uppercase tracking-tight">{subject}</Label>
                     </div>
                   ))}
                 </div>
-                {errors.subjects && <p className="text-primary font-semibold">{errors.subjects.message}</p>}
+                {errors.subjects && <p className="text-primary font-bold text-xs uppercase italic">{errors.subjects.message}</p>}
               </div>
               <div className="space-y-6">
-                <Label className="text-xl font-bold text-accent uppercase tracking-widest">Assigned Learner Roster</Label>
+                <Label className="text-xl font-bold text-accent uppercase tracking-[0.2em] text-xs">Assigned Learner Roster</Label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {students.map((student) => (
                     <div key={student._id} className={`flex items-center space-x-3 p-4 border rounded-xl transition-all cursor-pointer ${selectedStudents.includes(student._id) ? 'bg-accent/20 border-accent shadow-neon-cyan' : 'bg-secondary/30 border-white/10'}`}>
@@ -134,14 +138,14 @@ export function RegisterTutorPage() {
                         className="h-6 w-6"
                       />
                       <Label htmlFor={`tutor-student-${student._id}`} className="flex flex-col cursor-pointer flex-1">
-                        <span className="text-lg font-bold">{student.name}</span>
-                        <span className="text-xs text-muted-foreground">{student.level}</span>
+                        <span className="text-lg font-black uppercase tracking-tighter">{student.name}</span>
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{student.level} Tier</span>
                       </Label>
                     </div>
                   ))}
                 </div>
               </div>
-              <Button type="submit" size="lg" className="w-full h-20 text-2xl font-bold rounded-full bg-primary hover:bg-primary/90 shadow-neon-red hover:scale-[1.01] transition-all">
+              <Button type="submit" size="lg" className="w-full h-20 text-2xl font-black rounded-full bg-primary hover:bg-primary/90 shadow-neon-red hover:scale-[1.01] transition-all uppercase tracking-[0.2em]">
                 Authorize Expert Deployment
               </Button>
             </form>

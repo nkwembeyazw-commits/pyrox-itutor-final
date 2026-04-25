@@ -17,10 +17,10 @@ const SUBJECTS = [
   "Mathematics", "Physics", "Chemistry", "Biology", "English", "History", "Computer Science", "Business"
 ];
 export function TutorDetailsPage() {
-  const tutors = useQuery(api.pirox.getTutors);
-  const students = useQuery(api.pirox.getStudents) ?? [];
-  const updateTutor = useMutation(api.pirox.updateTutor);
-  const deleteTutor = useMutation(api.pirox.deleteTutor);
+  const tutors = useQuery(api.pyrox.getTutors);
+  const students = useQuery(api.pyrox.getStudents) ?? [];
+  const updateTutor = useMutation(api.pyrox.updateTutor);
+  const deleteTutor = useMutation(api.pyrox.deleteTutor);
   const [editingTutor, setEditingTutor] = useState<Doc<"tutors"> | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -46,7 +46,7 @@ export function TutorDetailsPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `pyrox_tutors_${format(new Date(), "yyyy-MM-dd")}.csv`);
+    link.setAttribute("download", `pyrox-itutor-tutors-${format(new Date(), "yyyy-MM-dd")}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -85,53 +85,59 @@ export function TutorDetailsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8 md:py-10 lg:py-12 space-y-10">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 print:hidden">
+        <header className="flex flex-col md:flex-row justify-between items-center gap-6 print:hidden">
           <div className="flex items-center gap-5">
             <div className="bg-primary p-4 rounded-2xl shadow-neon-red">
               <Briefcase className="h-10 w-10 text-white" />
             </div>
             <div>
-              <h1 className="text-5xl font-bold text-white font-display tracking-tight text-glow-red">Tutor Roster</h1>
-              <p className="text-muted-foreground text-lg">Managing educational experts.</p>
+              <h1 className="text-5xl font-bold text-white font-display tracking-tight text-glow-red uppercase">Tutor Roster</h1>
+              <p className="text-muted-foreground text-lg italic">PyroX-iTutor Knowledge Leader Directory.</p>
             </div>
           </div>
           <div className="flex gap-4">
-            <Button onClick={handlePrint} variant="outline" className="h-14 px-8 text-xl border-accent text-accent hover:bg-accent hover:text-background transition-all">
-              <Printer className="mr-3 h-6 w-6" /> Print
+            <Button onClick={handlePrint} variant="outline" className="h-14 px-8 text-xl border-accent text-accent hover:bg-accent hover:text-background font-bold transition-all">
+              <Printer className="mr-3 h-6 w-6" /> Print Roster
             </Button>
-            <Button onClick={handleExport} className="h-14 px-8 text-xl bg-primary hover:bg-primary/80 shadow-neon-red">
+            <Button onClick={handleExport} className="h-14 px-8 text-xl bg-primary hover:bg-primary/80 shadow-neon-red font-bold transition-all">
               <Download className="mr-3 h-6 w-6" /> Export CSV
             </Button>
           </div>
+        </header>
+        {/* Print Only Header */}
+        <div className="hidden print:block mb-8">
+          <h1 className="text-4xl font-bold text-black uppercase tracking-tighter border-b-4 border-black pb-2">PyroX-iTutor Expert Deployment Directory</h1>
+          <p className="text-sm font-mono mt-2">Registry Snapshot: {format(new Date(), "PPP HH:mm")}</p>
+          <p className="text-xs italic text-gray-600">Ignite Knowledge. Inspire Futures.</p>
         </div>
         <div className="glass-metallic neon-border-cyan rounded-2xl overflow-hidden shadow-2xl">
           <Table>
             <TableHeader className="bg-secondary/80 border-b border-white/10">
               <TableRow className="h-20 hover:bg-transparent">
-                <TableHead className="text-xl font-bold text-white px-8">Expert Name</TableHead>
-                <TableHead className="text-xl font-bold text-white">Contact</TableHead>
-                <TableHead className="text-xl font-bold text-white">Rate</TableHead>
-                <TableHead className="text-xl font-bold text-white">Subjects</TableHead>
-                <TableHead className="text-xl font-bold text-white px-8">Management</TableHead>
+                <TableHead className="text-xl font-bold text-white px-8 uppercase tracking-widest">Leader</TableHead>
+                <TableHead className="text-xl font-bold text-white uppercase tracking-widest">Link</TableHead>
+                <TableHead className="text-xl font-bold text-white uppercase tracking-widest">Rate</TableHead>
+                <TableHead className="text-xl font-bold text-white uppercase tracking-widest">Disciplines</TableHead>
+                <TableHead className="text-xl font-bold text-white px-8 uppercase tracking-widest text-right print:hidden">Control</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {!tutors ? (
-                <TableRow><TableCell colSpan={5} className="text-center py-32 text-2xl text-muted-foreground animate-pulse">Scanning database...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={5} className="text-center py-32 text-2xl text-muted-foreground animate-pulse">Scanning PyroX Database...</TableCell></TableRow>
               ) : tutors.length === 0 ? (
-                <TableRow><TableCell colSpan={5} className="text-center py-32 text-2xl text-muted-foreground italic">No tutors enlisted.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={5} className="text-center py-32 text-2xl text-muted-foreground font-mono italic">No expert data found.</TableCell></TableRow>
               ) : (
                 tutors.map((tutor) => (
                   <TableRow key={tutor._id} className="h-24 hover:bg-white/5 border-b border-white/5 transition-colors group">
                     <TableCell className="px-8">
                       <div className="flex flex-col">
-                        <span className="text-2xl font-bold text-glow-cyan text-accent group-hover:text-white transition-colors">{tutor.name}</span>
-                        <span className="text-sm text-muted-foreground">{tutor.mode}</span>
+                        <span className="text-2xl font-bold text-glow-cyan text-accent group-hover:text-white transition-colors font-display tracking-tight">{tutor.name}</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{tutor.mode} deployment</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-lg">{tutor.contact}</TableCell>
-                    <TableCell className="text-xl font-bold text-primary">${tutor.rate}/hr</TableCell>
-                    <TableCell className="text-lg max-w-xs truncate text-muted-foreground">
+                    <TableCell className="text-lg font-medium">{tutor.contact}</TableCell>
+                    <TableCell className="text-xl font-bold text-primary">${tutor.rate}<span className="text-xs text-muted-foreground ml-1">/HR</span></TableCell>
+                    <TableCell className="text-lg max-w-xs truncate text-muted-foreground font-medium">
                       {tutor.subjects.join(", ")}
                     </TableCell>
                     <TableCell className="px-8 text-right">
@@ -152,14 +158,14 @@ export function TutorDetailsPage() {
                           </AlertDialogTrigger>
                           <AlertDialogContent className="glass-metallic neon-border-red">
                             <AlertDialogHeader>
-                              <AlertDialogTitle className="text-2xl font-bold text-white">Critical Command: Expunge Expert?</AlertDialogTitle>
-                              <AlertDialogDescription className="text-muted-foreground">
-                                This will permanently remove {tutor.name} and all their associated schedule slots. This action is irreversible.
+                              <AlertDialogTitle className="text-2xl font-bold text-white uppercase tracking-tighter">Expunge Expert?</AlertDialogTitle>
+                              <AlertDialogDescription className="text-muted-foreground font-medium">
+                                Critical erasure of {tutor.name} from the PyroX knowledge roster. Irreversible command.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel className="bg-secondary/50 border-white/10 text-white">Abort</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(tutor._id)} className="bg-primary text-white shadow-neon-red">Confirm Expunge</AlertDialogAction>
+                              <AlertDialogCancel className="bg-secondary/50 border-white/10 text-white font-bold uppercase">Abort</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(tutor._id)} className="bg-primary text-white shadow-neon-red font-bold uppercase">Confirm Expunge</AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
@@ -174,27 +180,27 @@ export function TutorDetailsPage() {
         <Dialog open={isEditDialogOpen} onOpenChange={(open) => { if (!open) setEditingTutor(null); setIsEditDialogOpen(open); }}>
           <DialogContent className="glass-metallic neon-border-cyan border-2 sm:max-w-[700px] p-8 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-3xl font-bold text-white mb-6">Modify Expert Registry</DialogTitle>
+              <DialogTitle className="text-3xl font-bold text-white mb-6 uppercase tracking-tighter">Modify Expert Registry</DialogTitle>
             </DialogHeader>
             {editingTutor && (
               <div className="space-y-8">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label className="text-accent">Expert Name</Label>
-                    <Input value={editingTutor.name} onChange={(e) => setEditingTutor({...editingTutor, name: e.target.value})} className="h-14 bg-secondary/50 border-accent/20" />
+                    <Label className="text-accent uppercase font-bold text-xs tracking-widest">Name</Label>
+                    <Input value={editingTutor.name} onChange={(e) => setEditingTutor({...editingTutor, name: e.target.value})} className="h-14 bg-secondary/50 border-accent/20 font-bold" />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-accent">Contact Link</Label>
-                    <Input value={editingTutor.contact} onChange={(e) => setEditingTutor({...editingTutor, contact: e.target.value})} className="h-14 bg-secondary/50 border-accent/20" />
+                    <Label className="text-accent uppercase font-bold text-xs tracking-widest">Contact</Label>
+                    <Input value={editingTutor.contact} onChange={(e) => setEditingTutor({...editingTutor, contact: e.target.value})} className="h-14 bg-secondary/50 border-accent/20 font-bold" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label className="text-accent">Instruction Mode</Label>
+                    <Label className="text-accent uppercase font-bold text-xs tracking-widest">Mode</Label>
                     <select
                       value={editingTutor.mode}
                       onChange={(e) => setEditingTutor({...editingTutor, mode: e.target.value})}
-                      className="flex h-14 w-full rounded-md border-accent/20 bg-secondary/50 px-3 text-white outline-none"
+                      className="flex h-14 w-full rounded-md border-accent/20 bg-secondary/50 px-3 text-white outline-none font-bold"
                     >
                       <option value="Online">Online</option>
                       <option value="In-person">In-person</option>
@@ -202,15 +208,15 @@ export function TutorDetailsPage() {
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-accent">Rate ($/hr)</Label>
-                    <Input type="number" value={editingTutor.rate} onChange={(e) => setEditingTutor({...editingTutor, rate: Number(e.target.value)})} className="h-14 bg-secondary/50 border-accent/20" />
+                    <Label className="text-accent uppercase font-bold text-xs tracking-widest">Rate ($/hr)</Label>
+                    <Input type="number" value={editingTutor.rate} onChange={(e) => setEditingTutor({...editingTutor, rate: Number(e.target.value)})} className="h-14 bg-secondary/50 border-accent/20 font-bold" />
                   </div>
                 </div>
                 <div className="space-y-4">
                   <Label className="text-primary text-xl font-bold uppercase tracking-widest">Core Disciplines</Label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {SUBJECTS.map((subj) => (
-                      <div key={subj} className={`flex items-center space-x-3 p-3 border rounded-xl ${editingTutor.subjects.includes(subj) ? 'bg-primary/20 border-primary' : 'bg-secondary/30 border-white/5'}`}>
+                      <div key={subj} className={`flex items-center space-x-3 p-3 border rounded-xl transition-all ${editingTutor.subjects.includes(subj) ? 'bg-primary/20 border-primary' : 'bg-secondary/30 border-white/5'}`}>
                         <Checkbox
                           checked={editingTutor.subjects.includes(subj)}
                           onCheckedChange={(checked) => {
@@ -220,16 +226,16 @@ export function TutorDetailsPage() {
                             setEditingTutor({...editingTutor, subjects: next});
                           }}
                         />
-                        <span className="text-sm font-medium">{subj}</span>
+                        <span className="text-sm font-bold">{subj}</span>
                       </div>
                     ))}
                   </div>
                 </div>
                 <div className="space-y-4">
-                  <Label className="text-accent text-xl font-bold uppercase tracking-widest">Learner Roster</Label>
+                  <Label className="text-accent text-xl font-bold uppercase tracking-widest">Roster Assignments</Label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {students.map((s) => (
-                      <div key={s._id} className={`flex items-center space-x-3 p-3 border rounded-xl ${editingTutor.studentIds.includes(s._id) ? 'bg-accent/20 border-accent' : 'bg-secondary/30 border-white/5'}`}>
+                      <div key={s._id} className={`flex items-center space-x-3 p-3 border rounded-xl transition-all ${editingTutor.studentIds.includes(s._id) ? 'bg-accent/20 border-accent' : 'bg-secondary/30 border-white/5'}`}>
                         <Checkbox
                           checked={editingTutor.studentIds.includes(s._id)}
                           onCheckedChange={(checked) => {
@@ -239,7 +245,7 @@ export function TutorDetailsPage() {
                             setEditingTutor({...editingTutor, studentIds: next});
                           }}
                         />
-                        <span className="text-xs font-medium truncate">{s.name}</span>
+                        <span className="text-xs font-bold truncate">{s.name}</span>
                       </div>
                     ))}
                   </div>
@@ -247,8 +253,8 @@ export function TutorDetailsPage() {
               </div>
             )}
             <DialogFooter className="mt-8">
-              <Button onClick={() => setIsEditDialogOpen(false)} variant="outline" className="h-16 px-8 border-white/10" disabled={isUpdating}>Abort</Button>
-              <Button onClick={handleEditSave} className="h-16 px-12 bg-primary text-white font-bold shadow-neon-red" disabled={isUpdating}>
+              <Button onClick={() => setIsEditDialogOpen(false)} variant="outline" className="h-16 px-8 border-white/10 font-bold uppercase" disabled={isUpdating}>Abort</Button>
+              <Button onClick={handleEditSave} className="h-16 px-12 bg-primary text-white font-bold shadow-neon-red uppercase tracking-widest" disabled={isUpdating}>
                 {isUpdating ? <div className="h-5 w-5 animate-spin border-2 border-white border-t-transparent rounded-full mr-2" /> : <Check className="mr-2" />}
                 Commit Updates
               </Button>
@@ -258,10 +264,10 @@ export function TutorDetailsPage() {
       </div>
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
-          body { background: white !important; color: black !important; }
+          body { background: white !important; color: black !important; padding: 0 !important; }
           .print\\:hidden { display: none !important; }
           .glass-metallic { background: none !important; border: 1px solid #ccc !important; box-shadow: none !important; }
-          th, td { color: black !important; border-bottom: 1px solid #eee !important; }
+          th, td { color: black !important; border-bottom: 1px solid #eee !important; padding: 10px !important; }
           .text-glow-cyan, .text-glow-red { text-shadow: none !important; color: black !important; }
           .bg-secondary\\/80 { background: #f0f0f0 !important; }
         }

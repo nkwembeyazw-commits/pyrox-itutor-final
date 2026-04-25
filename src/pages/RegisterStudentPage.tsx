@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useMutation } from 'convex/react';
@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { UserPlus, Sparkles } from 'lucide-react';
+import { BrandLogo } from '@/components/BrandLogo';
 const SUBJECT_LIST = [
   "Mathematics", "English Language", "English Literature", "Physics", "Chemistry",
   "Biology", "History", "Geography", "Computer Science", "Business Studies",
@@ -25,7 +26,7 @@ const studentSchema = z.object({
 });
 type StudentForm = z.infer<typeof studentSchema>;
 export function RegisterStudentPage() {
-  const createStudent = useMutation(api.pirox.createStudent);
+  const createStudent = useMutation(api.pyrox.createStudent);
   const navigate = useNavigate();
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<StudentForm>({
     resolver: zodResolver(studentSchema),
@@ -52,44 +53,47 @@ export function RegisterStudentPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8 md:py-10 lg:py-12">
-        <Card className="glass-metallic neon-border-cyan">
-          <CardHeader className="bg-secondary/80 p-8 rounded-t-lg border-b border-accent/20">
-            <div className="flex items-center gap-4">
-              <UserPlus className="h-10 w-10 text-accent" />
-              <CardTitle className="text-4xl text-white font-display tracking-tight text-glow-cyan">Student Registration</CardTitle>
+        <Card className="glass-metallic neon-border-cyan border-2 overflow-hidden shadow-2xl transition-all duration-500">
+          <CardHeader className="bg-secondary/80 p-8 border-b border-accent/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <UserPlus className="h-10 w-10 text-accent" />
+                <CardTitle className="text-4xl text-white font-display tracking-tight text-glow-cyan uppercase">PyroX Student Registration</CardTitle>
+              </div>
+              <BrandLogo variant="icon" size={40} />
             </div>
           </CardHeader>
           <CardContent className="p-8 space-y-10">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div className="space-y-3">
-                  <Label className="text-xl font-bold text-accent flex items-center gap-2">
+                  <Label className="text-xl font-bold text-accent flex items-center gap-2 uppercase tracking-widest text-xs">
                     <Sparkles className="h-4 w-4" /> Full Name
                   </Label>
-                  <Input {...register("name")} className="h-16 text-lg bg-secondary/50 border-white/10 text-white placeholder:text-muted-foreground focus:border-accent transition-all" placeholder="Enter Legal Name" />
-                  {errors.name && <p className="text-primary font-semibold">{errors.name.message}</p>}
+                  <Input {...register("name")} className="h-16 text-lg bg-secondary/50 border-white/10 text-white placeholder:text-muted-foreground focus:border-accent transition-all font-bold" placeholder="Legal Identity" />
+                  {errors.name && <p className="text-primary font-bold text-xs uppercase italic">{errors.name.message}</p>}
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-xl font-bold text-accent">Deployment Location</Label>
-                  <Input {...register("location")} className="h-16 text-lg bg-secondary/50 border-white/10 text-white placeholder:text-muted-foreground focus:border-accent transition-all" placeholder="City or Campus" />
-                  {errors.location && <p className="text-primary font-semibold">{errors.location.message}</p>}
+                  <Label className="text-xl font-bold text-accent uppercase tracking-widest text-xs">Deployment Location</Label>
+                  <Input {...register("location")} className="h-16 text-lg bg-secondary/50 border-white/10 text-white placeholder:text-muted-foreground focus:border-accent transition-all font-bold" placeholder="City // Campus" />
+                  {errors.location && <p className="text-primary font-bold text-xs uppercase italic">{errors.location.message}</p>}
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-xl font-bold text-accent">Academic Tier</Label>
+                  <Label className="text-xl font-bold text-accent uppercase tracking-widest text-xs">Academic Tier</Label>
                   <select
                     {...register("level")}
-                    className="flex h-16 w-full rounded-md border-white/10 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent"
+                    className="flex h-16 w-full rounded-md border-white/10 bg-secondary/50 px-3 text-lg text-white outline-none focus:border-accent font-bold"
                   >
                     <option value="" className="bg-background">Select Tier</option>
                     <option value="Primary" className="bg-background">Primary Core</option>
                     <option value="IGCSE" className="bg-background">IGCSE Standard</option>
                     <option value="A Level" className="bg-background">A Level Advanced</option>
                   </select>
-                  {errors.level && <p className="text-primary font-semibold">{errors.level.message}</p>}
+                  {errors.level && <p className="text-primary font-bold text-xs uppercase italic">{errors.level.message}</p>}
                 </div>
               </div>
               <div className="space-y-6">
-                <Label className="text-xl font-bold text-primary">Core Modules Selection</Label>
+                <Label className="text-xl font-bold text-primary uppercase tracking-widest text-xs">Core Module Access Selection</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {SUBJECT_LIST.map((subject) => {
                     const isChecked = watchedSubjects.includes(subject);
@@ -101,17 +105,17 @@ export function RegisterStudentPage() {
                           onCheckedChange={(checked) => handleSubjectChange(subject, !!checked)}
                           className="h-6 w-6"
                         />
-                        <Label htmlFor={`subject-${subject}`} className="text-lg font-medium text-white/90 cursor-pointer flex-1">
+                        <Label htmlFor={`subject-${subject}`} className="text-lg font-bold text-white/90 cursor-pointer flex-1 tracking-tight">
                           {subject}
                         </Label>
                       </div>
                     );
                   })}
                 </div>
-                {errors.subjects && <p className="text-primary font-semibold">{errors.subjects.message}</p>}
+                {errors.subjects && <p className="text-primary font-bold text-xs uppercase italic">{errors.subjects.message}</p>}
               </div>
-              <Button type="submit" size="lg" className="w-full h-20 text-2xl font-bold rounded-full bg-accent text-background hover:bg-accent/90 shadow-neon-cyan hover:scale-[1.01] transition-all">
-                Execute Enrollment
+              <Button type="submit" size="lg" className="w-full h-20 text-2xl font-black rounded-full bg-accent text-background hover:bg-accent/90 shadow-neon-cyan hover:scale-[1.01] transition-all uppercase tracking-[0.2em]">
+                Execute Enrollment Protocol
               </Button>
             </form>
           </CardContent>

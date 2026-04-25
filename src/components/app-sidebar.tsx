@@ -1,6 +1,7 @@
 import React from "react";
 import { GraduationCap, Users, Calendar, LayoutDashboard, UserPlus, ClipboardList, Sparkles, BookOpen } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { BrandLogo } from "@/components/BrandLogo";
 import {
   Sidebar,
   SidebarContent,
@@ -25,15 +26,12 @@ export function AppSidebar(): JSX.Element {
   return (
     <Sidebar className="border-r border-accent/20 bg-background/95 backdrop-blur-xl">
       <SidebarHeader className="p-8">
-        <div className="flex items-center gap-4 group">
-          <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-neon-cyan group-hover:scale-110 transition-all">
-            <GraduationCap className="text-white h-7 w-7" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-2xl font-display font-bold tracking-tighter text-white">PyroX <span className="text-primary">-iTutor</span></span>
-            <span className="text-[10px] uppercase tracking-widest text-accent font-bold">Admin Portal</span>
-          </div>
-        </div>
+        <Link to="/" className="hover:opacity-80 transition-opacity">
+          <BrandLogo variant="full" size={52} />
+          <p className="mt-4 text-[10px] text-muted-foreground font-medium italic">
+            Ignite Knowledge. Inspire Futures.
+          </p>
+        </Link>
       </SidebarHeader>
       <SidebarContent className="px-4">
         <SidebarGroup>
@@ -59,9 +57,9 @@ export function AppSidebar(): JSX.Element {
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-accent">
             <Sparkles className="h-4 w-4 animate-pulse" />
-            <span className="text-xs font-bold uppercase tracking-wider">Ignite Knowledge.</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Active Protocol V2.1</span>
           </div>
-          <div className="text-[10px] text-muted-foreground font-medium">© 2024 PYROX SYSTEMS V2.0</div>
+          <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">© 2024 PYROX SYSTEMS | ADMIN PORTAL</div>
         </div>
       </SidebarFooter>
     </Sidebar>

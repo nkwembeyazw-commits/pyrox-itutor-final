@@ -8,8 +8,6 @@ export const createStudent = mutation({
     location: v.string(),
     level: v.string(),
     subjects: v.array(v.string()),
-    lastPaidDate: v.number(),
-    paymentInterval: v.union(v.literal("weekly"), v.literal("monthly")),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("students", {
@@ -31,51 +29,22 @@ export const updateStudent = mutation({
     location: v.string(),
     level: v.string(),
     subjects: v.array(v.string()),
-    lastPaidDate: v.number(),
-    paymentInterval: v.union(v.literal("weekly"), v.literal("monthly")),
   },
   handler: async (ctx, args) => {
     const { id, ...data } = args;
     await ctx.db.patch(id, data);
   },
 });
-export const markStudentAsPaid = mutation({
-  args: { id: v.id("students") },
-  handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, {
-      lastPaidDate: Date.now(),
-    });
-  },
-});
 export const deleteStudent = mutation({
   args: { id: v.id("students") },
   handler: async (ctx, args) => {
-    // 1. Delete the student record
     await ctx.db.delete(args.id);
-    // 2. Cascade delete schedule slots owned by this student
     const slots = await ctx.db
       .query("schedules")
       .withIndex("by_owner", (q) => q.eq("ownerId", args.id))
       .collect();
     for (const slot of slots) {
       await ctx.db.delete(slot._id);
-    }
-    // 3. Remove student from all Tutor rosters to maintain referential integrity
-    const tutors = await ctx.db.query("tutors").collect();
-    for (const tutor of tutors) {
-      if (tutor.studentIds?.includes(args.id)) {
-        await ctx.db.patch(tutor._id, {
-          studentIds: tutor.studentIds.filter(sid => sid !== args.id)
-        });
-      }
-    }
-    // 4. Remove schedule slots referencing this student (using optimized index)
-    const tutorSlotsReferencingStudent = await ctx.db
-      .query("schedules")
-      .withIndex("by_studentId", (q) => q.eq("studentId", args.id))
-      .collect();
-    for (const ts of tutorSlotsReferencingStudent) {
-       await ctx.db.delete(ts._id);
     }
   },
 });
@@ -139,8 +108,6 @@ export const upsertScheduleSlot = mutation({
     timeSlot: v.string(),
     subject: v.optional(v.string()),
     notes: v.optional(v.string()),
-    studentId: v.optional(v.id("students")),
-    studentName: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db
@@ -156,8 +123,6 @@ export const upsertScheduleSlot = mutation({
         await ctx.db.patch(existing._id, {
           subject: args.subject,
           notes: args.notes,
-          studentId: args.studentId,
-          studentName: args.studentName,
         });
       }
     } else if (args.subject || args.notes) {
@@ -166,12 +131,12 @@ export const upsertScheduleSlot = mutation({
   },
 });
 export const getSchedule = query({
-  args: { ownerId: v.union(v.id("students"), v.id("tutors"), v.literal("skip")) },
+  args: { ownerId: v.id("students") || v.id("tutors") || v.string() },
   handler: async (ctx, args) => {
-    if (args.ownerId === "skip") return [];
+    if (typeof args.ownerId === "string" && args.ownerId === "skip") return [];
     return await ctx.db
       .query("schedules")
-      .withIndex("by_owner", (q) => q.eq("ownerId", args.ownerId as Id<"students"> | Id<"tutors">))
+      .withIndex("by_owner", (q) => q.eq("ownerId", args.ownerId as any))
       .collect();
   },
 });
