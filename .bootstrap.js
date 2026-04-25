@@ -81,7 +81,8 @@ function runSetupCommands() {
     "bun add papaparse@^5.4.1",
     "bun add lucide-react@latest",
     "bun remove lucide-react",
-    "bun add lucide-react@0.292.0"
+    "bun add lucide-react@0.292.0",
+    "bun add papaparse"
 ];
     
     if (commands.length === 0) {

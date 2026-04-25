@@ -3,7 +3,7 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '@convex/_generated/api';
 import { ScheduleGrid } from '@/components/ScheduleGrid';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,8 @@ export function TutorSchedulePage() {
   const tutors = useQuery(api.pirox.getTutors) ?? [];
   const [selectedTutorId, setSelectedTutorId] = useState<Id<"tutors"> | null>(null);
   const selectedTutor = tutors.find(t => t._id === selectedTutorId);
-  const schedule = useQuery(api.pirox.getSchedule, { ownerId: selectedTutorId as any }) ?? [];
+  const queryArgs = selectedTutorId ? { ownerId: selectedTutorId } : 'skip';
+  const schedule = useQuery(api.pirox.getSchedule, queryArgs === 'skip' ? 'skip' : queryArgs) ?? [];
   const upsertSlot = useMutation(api.pirox.upsertScheduleSlot);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeCell, setActiveCell] = useState<{ day: string; time: string } | null>(null);
@@ -115,10 +116,10 @@ export function TutorSchedulePage() {
           </div>
         )}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="glass-metallic neon-border-red border-2 sm:max-w-[500px] p-8">
+          <DialogContent className="glass-metallic neon-border-red border-2 sm:max-w-[500px] p-8" aria-describedby="tutor-dialog-desc">
             <DialogHeader>
               <DialogTitle className="text-3xl font-bold text-white mb-2">Deploy Expert</DialogTitle>
-              <p className="text-primary font-mono">{activeCell?.day} at {activeCell?.time}</p>
+              <DialogDescription id="tutor-dialog-desc" className="text-primary font-mono">{activeCell?.day} at {activeCell?.time}</DialogDescription>
             </DialogHeader>
             <div className="space-y-6 py-4">
               <div className="space-y-2">

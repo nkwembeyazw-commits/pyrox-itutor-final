@@ -3,7 +3,7 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '@convex/_generated/api';
 import { ScheduleGrid } from '@/components/ScheduleGrid';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -91,10 +91,10 @@ export function StudentSchedulePage() {
           </div>
         )}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="glass-metallic neon-border-cyan border-2 sm:max-w-[500px] p-8">
+          <DialogContent className="glass-metallic neon-border-cyan border-2 sm:max-w-[500px] p-8" aria-describedby="student-dialog-desc">
             <DialogHeader>
               <DialogTitle className="text-3xl font-bold text-white mb-2">Schedule Session</DialogTitle>
-              <p className="text-accent font-mono">{activeCell?.day} at {activeCell?.time}</p>
+              <DialogDescription id="student-dialog-desc" className="text-accent font-mono">{activeCell?.day} at {activeCell?.time}</DialogDescription>
             </DialogHeader>
             <div className="space-y-6 py-4">
               <div className="space-y-2">
