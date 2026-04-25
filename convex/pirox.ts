@@ -75,6 +75,38 @@ export const createTutor = mutation({
     });
   },
 });
+export const updateTutor = mutation({
+  args: {
+    id: v.id("tutors"),
+    name: v.string(),
+    contact: v.string(),
+    subjects: v.array(v.string()),
+    mode: v.string(),
+    studentIds: v.array(v.id("students")),
+    rate: v.number(),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const { id, ...updates } = args;
+    await ctx.db.patch(id, updates);
+    return null;
+  },
+});
+export const deleteTutor = mutation({
+  args: { id: v.id("tutors") },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
+    const schedules = await ctx.db
+      .query("schedules")
+      .withIndex("by_owner", (q) => q.eq("ownerId", args.id))
+      .collect();
+    for (const s of schedules) {
+      await ctx.db.delete(s._id);
+    }
+    return null;
+  },
+});
 export const getTutors = query({
   args: {},
   handler: async (ctx) => {
@@ -100,7 +132,7 @@ export const upsertScheduleSlot = mutation({
   handler: async (ctx, args) => {
     const existing = await ctx.db
       .query("schedules")
-      .withIndex("by_owner_day_time", (q) => 
+      .withIndex("by_owner_day_time", (q) =>
         q.eq("ownerId", args.ownerId).eq("day", args.day).eq("timeSlot", args.timeSlot)
       )
       .unique();

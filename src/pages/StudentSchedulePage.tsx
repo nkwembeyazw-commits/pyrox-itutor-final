@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@convex/_generated/api';
 import { ScheduleGrid } from '@/components/ScheduleGrid';
@@ -13,7 +13,7 @@ import { Id } from '@convex/_generated/dataModel';
 function ScheduleReport({ studentId, studentName, level }: { studentId: Id<"students">, studentName: string, level: string }) {
   const schedule = useQuery(api.pirox.getSchedule, { ownerId: studentId }) ?? [];
   return (
-    <div className="mb-20 page-break-after">
+    <div className="mb-20 page-break-after border-b border-gray-200 pb-10">
       <div className="flex justify-between items-end border-b-2 border-black pb-4 mb-6">
         <div>
           <h2 className="text-3xl font-bold text-black uppercase tracking-tighter">iTutor Student Schedule</h2>
@@ -31,6 +31,7 @@ function ScheduleReport({ studentId, studentName, level }: { studentId: Id<"stud
 export function StudentSchedulePage() {
   const students = useQuery(api.pirox.getStudents) ?? [];
   const [selectedStudentId, setSelectedStudentId] = useState<Id<"students"> | null>(null);
+  const [isPrintingAll, setIsPrintingAll] = useState(false);
   const queryArgs = selectedStudentId ? { ownerId: selectedStudentId } : "skip";
   const schedule = useQuery(api.pirox.getSchedule, queryArgs === "skip" ? "skip" : queryArgs) ?? [];
   const selectedStudent = students.find(s => s._id === selectedStudentId);
@@ -40,6 +41,15 @@ export function StudentSchedulePage() {
   const [subject, setSubject] = useState("");
   const [notes, setNotes] = useState("");
   const [useCustomSubject, setUseCustomSubject] = useState(false);
+  useEffect(() => {
+    if (isPrintingAll) {
+      const timer = setTimeout(() => {
+        window.print();
+        setIsPrintingAll(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isPrintingAll]);
   const handleCellClick = (day: string, time: string, existing?: any) => {
     if (!selectedStudentId) {
       toast.error("Please select a student first.");
@@ -69,11 +79,7 @@ export function StudentSchedulePage() {
     }
   };
   const printSingle = () => window.print();
-  const printAll = () => {
-    document.body.classList.add('print-all-mode');
-    window.print();
-    document.body.classList.remove('print-all-mode');
-  };
+  const printAll = () => setIsPrintingAll(true);
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8 md:py-10 lg:py-12 space-y-12 no-print">
@@ -104,10 +110,10 @@ export function StudentSchedulePage() {
               </Select>
             </div>
             <div className="flex gap-2 w-full sm:w-auto">
-              <Button onClick={printSingle} disabled={!selectedStudentId} className="h-16 px-6 bg-accent text-background font-bold shadow-neon-cyan flex-1">
+              <Button onClick={printSingle} disabled={!selectedStudentId} className="h-16 px-6 bg-accent text-background font-bold shadow-neon-cyan flex-1 transition-transform active:scale-95">
                 <Printer className="mr-2 h-5 w-5" /> Print My
               </Button>
-              <Button onClick={printAll} variant="outline" className="h-16 px-6 border-accent text-accent font-bold hover:bg-accent/10 flex-1">
+              <Button onClick={printAll} variant="outline" className="h-16 px-6 border-accent text-accent font-bold hover:bg-accent/10 flex-1 transition-transform active:scale-95">
                 <Files className="mr-2 h-5 w-5" /> Print All
               </Button>
             </div>
@@ -167,13 +173,7 @@ export function StudentSchedulePage() {
         </Dialog>
       </div>
       <div className="hidden print:block print-section p-10 bg-white text-black">
-        {selectedStudentId && !document.body.classList.contains('print-all-mode') ? (
-          <ScheduleReport
-            studentId={selectedStudentId}
-            studentName={selectedStudent?.name || "Learner"}
-            level={selectedStudent?.level || "Core Tier"}
-          />
-        ) : (
+        {isPrintingAll ? (
           students.map(s => (
             <ScheduleReport
               key={s._id}
@@ -182,7 +182,13 @@ export function StudentSchedulePage() {
               level={s.level}
             />
           ))
-        )}
+        ) : selectedStudentId ? (
+          <ScheduleReport
+            studentId={selectedStudentId}
+            studentName={selectedStudent?.name || "Learner"}
+            level={selectedStudent?.level || "Core Tier"}
+          />
+        ) : null}
       </div>
     </div>
   );
