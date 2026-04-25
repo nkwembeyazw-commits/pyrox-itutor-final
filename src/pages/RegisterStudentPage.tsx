@@ -11,7 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { useNavigate, Link } from 'react-router-dom';
-import { UserPlus, Sparkles, ArrowLeft } from 'lucide-react';
+import { UserPlus, Sparkles, ArrowLeft, CreditCard } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { SUBJECT_LIST } from '@/lib/constants';
 const studentSchema = z.object({
@@ -19,19 +19,40 @@ const studentSchema = z.object({
   location: z.string().min(2, "Location is required"),
   level: z.string().min(1, "Academic level is required"),
   subjects: z.array(z.string()).min(1, "Select at least one subject"),
+  lastPaidDate: z.string().min(1, "Initial payment date is required"),
+  paymentInterval: z.union([v.literal("weekly"), v.literal("monthly")]),
 });
-type StudentForm = z.infer<typeof studentSchema>;
+const formSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  location: z.string().min(2, "Location is required"),
+  level: z.string().min(1, "Academic level is required"),
+  subjects: z.array(z.string()).min(1, "Select at least one subject"),
+  lastPaidDate: z.string().min(1, "Initial payment date is required"),
+  paymentInterval: z.enum(["weekly", "monthly"]),
+});
+type StudentFormValues = z.infer<typeof formSchema>;
 export function RegisterStudentPage() {
   const createStudent = useMutation(api.pyrox.createStudent);
   const navigate = useNavigate();
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<StudentForm>({
-    resolver: zodResolver(studentSchema),
-    defaultValues: { name: "", location: "", level: "", subjects: [] }
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<StudentFormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { 
+      name: "", 
+      location: "", 
+      level: "", 
+      subjects: [], 
+      lastPaidDate: new Date().toISOString().split('T')[0],
+      paymentInterval: "monthly" 
+    }
   });
   const watchedSubjects = watch("subjects");
-  const onSubmit = async (data: StudentForm) => {
+  const onSubmit = async (data: StudentFormValues) => {
     try {
-      await createStudent(data);
+      const timestamp = new Date(data.lastPaidDate).getTime();
+      await createStudent({
+        ...data,
+        lastPaidDate: timestamp,
+      });
       toast.success("Student enrolled in the future!");
       navigate("/students/details");
     } catch (error) {
@@ -62,7 +83,7 @@ export function RegisterStudentPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <UserPlus className="h-8 w-8 md:h-10 md:w-10 text-accent" />
-                <CardTitle className="text-2xl md:text-4xl text-white font-display tracking-tight text-glow-cyan uppercase">PyroX Student Registration</CardTitle>
+                <CardTitle className="text-2xl md:text-4xl text-white font-display tracking-tight text-glow-cyan uppercase leading-tight">PyroX Student Registration</CardTitle>
               </div>
               <BrandLogo variant="icon" size={40} className="hidden sm:flex" />
             </div>
@@ -94,6 +115,24 @@ export function RegisterStudentPage() {
                     <option value="A Level" className="bg-background">A Level Advanced</option>
                   </select>
                   {errors.level && <p className="text-primary font-bold text-xs uppercase italic">{errors.level.message}</p>}
+                </div>
+                <div className="space-y-3 bg-accent/5 p-4 rounded-2xl border border-accent/10">
+                  <Label className="text-xl font-bold text-accent uppercase tracking-widest text-xs flex items-center gap-2 mb-4">
+                    <CreditCard className="h-4 w-4" /> Financial Setup
+                  </Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Initial Pay</Label>
+                      <Input type="date" {...register("lastPaidDate")} className="h-12 bg-secondary/50 border-white/10 text-white font-bold" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Billing</Label>
+                      <select {...register("paymentInterval")} className="h-12 w-full rounded-md border-white/10 bg-secondary/50 px-2 text-white font-bold">
+                        <option value="monthly">Monthly</option>
+                        <option value="weekly">Weekly</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="space-y-6">

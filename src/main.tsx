@@ -18,6 +18,7 @@ import { RegisterTutorPage } from '@/pages/RegisterTutorPage'
 import { TutorDetailsPage } from '@/pages/TutorDetailsPage'
 import { StudentSchedulePage } from '@/pages/StudentSchedulePage'
 import { TutorSchedulePage } from '@/pages/TutorSchedulePage'
+import { PaymentsDuesPage } from '@/pages/PaymentsDuesPage'
 const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
       { path: "/tutors/details", element: <TutorDetailsPage /> },
       { path: "/schedules/student", element: <StudentSchedulePage /> },
       { path: "/schedules/tutor", element: <TutorSchedulePage /> },
+      { path: "/payments/dues", element: <PaymentsDuesPage /> },
     ],
   },
 ]);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@convex/_generated/api';
 import { ScheduleGrid } from '@/components/ScheduleGrid';
@@ -37,14 +37,15 @@ function ScheduleReport({ studentId, studentName, level }: { studentId: Id<"stud
   );
 }
 export function StudentSchedulePage() {
-  const students = useQuery(api.pyrox.getStudents) ?? [];
+  const studentsRaw = useQuery(api.pyrox.getStudents);
+  const students = useMemo(() => studentsRaw ?? [], [studentsRaw]);
   const [selectedStudentId, setSelectedStudentId] = useState<Id<"students"> | null>(null);
   const [isPrintingAll, setIsPrintingAll] = useState(false);
   const schedule = useQuery(
     api.pyrox.getSchedule,
     selectedStudentId ? { ownerId: selectedStudentId } : "skip"
   ) ?? [];
-  const selectedStudent = students.find(s => s._id === selectedStudentId);
+  const selectedStudent = useMemo(() => students.find(s => s._id === selectedStudentId), [students, selectedStudentId]);
   const upsertSlot = useMutation(api.pyrox.upsertScheduleSlot);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeCell, setActiveCell] = useState<{ day: string; time: string } | null>(null);
@@ -152,10 +153,10 @@ export function StudentSchedulePage() {
           </div>
         )}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="glass-metallic neon-border-cyan border-2 sm:max-w-[500px] p-8" aria-describedby="student-dialog-desc">
+          <DialogContent className="glass-metallic neon-border-cyan border-2 sm:max-w-[500px] p-8">
             <DialogHeader>
-              <DialogTitle className="text-2xl md:text-3xl font-bold text-white mb-2 uppercase tracking-tighter">Schedule Session</DialogTitle>
-              <DialogDescription id="student-dialog-desc" className="text-accent font-mono uppercase font-bold text-xs">{activeCell?.day} // {activeCell?.time}</DialogDescription>
+              <DialogTitle className="text-2xl md:text-3xl font-bold text-white mb-2 uppercase tracking-tighter leading-none">Schedule Session</DialogTitle>
+              <DialogDescription className="text-accent font-mono uppercase font-bold text-xs mt-2">{activeCell?.day} // {activeCell?.time}</DialogDescription>
             </DialogHeader>
             <div className="space-y-6 py-4">
               <div className="space-y-2">

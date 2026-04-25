@@ -7,9 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Users, Mail, Save, PlusCircle, Printer, Files, Send, ArrowLeft } from "lucide-react";
+import { BookOpen, Users, Mail, Save, PlusCircle, Printer, Files, ArrowLeft } from "lucide-react";
 import { toast } from 'sonner';
-import { format } from "date-fns";
 import { Id } from '@convex/_generated/dataModel';
 import { BrandLogo } from '@/components/BrandLogo';
 import { Link } from 'react-router-dom';
@@ -38,8 +37,10 @@ function TutorScheduleReport({ tutorId, tutorName, mode }: { tutorId: Id<"tutors
   );
 }
 export function TutorSchedulePage() {
-  const tutors = useQuery(api.pyrox.getTutors) ?? [];
-  const students = useQuery(api.pyrox.getStudents) ?? [];
+  const tutorsRaw = useQuery(api.pyrox.getTutors);
+  const studentsRaw = useQuery(api.pyrox.getStudents);
+  const tutors = useMemo(() => tutorsRaw ?? [], [tutorsRaw]);
+  const students = useMemo(() => studentsRaw ?? [], [studentsRaw]);
   const [selectedTutorId, setSelectedTutorId] = useState<Id<"tutors"> | null>(null);
   const [isPrintingAll, setIsPrintingAll] = useState(false);
   const selectedTutor = useMemo(() => tutors.find(t => t._id === selectedTutorId), [tutors, selectedTutorId]);
@@ -182,10 +183,10 @@ export function TutorSchedulePage() {
           </div>
         )}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="glass-metallic neon-border-red border-2 sm:max-w-[500px] p-8 max-h-[90vh] overflow-y-auto" aria-describedby="tutor-dialog-desc">
+          <DialogContent className="glass-metallic neon-border-red border-2 sm:max-w-[500px] p-8 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-2xl md:text-3xl font-bold text-white mb-2 uppercase tracking-tighter">Deploy Expert</DialogTitle>
-              <DialogDescription id="tutor-dialog-desc" className="text-primary font-mono uppercase font-bold text-xs">{activeCell?.day} // {activeCell?.time}</DialogDescription>
+              <DialogTitle className="text-2xl md:text-3xl font-bold text-white mb-2 uppercase tracking-tighter leading-none">Deploy Expert</DialogTitle>
+              <DialogDescription className="text-primary font-mono uppercase font-bold text-xs mt-2">{activeCell?.day} // {activeCell?.time}</DialogDescription>
             </DialogHeader>
             <div className="space-y-6 py-4">
               <div className="space-y-2">

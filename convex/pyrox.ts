@@ -8,6 +8,8 @@ export const createStudent = mutation({
     location: v.string(),
     level: v.string(),
     subjects: v.array(v.string()),
+    lastPaidDate: v.number(),
+    paymentInterval: v.union(v.literal("weekly"), v.literal("monthly")),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("students", {
@@ -29,10 +31,20 @@ export const updateStudent = mutation({
     location: v.string(),
     level: v.string(),
     subjects: v.array(v.string()),
+    lastPaidDate: v.number(),
+    paymentInterval: v.union(v.literal("weekly"), v.literal("monthly")),
   },
   handler: async (ctx, args) => {
     const { id, ...data } = args;
     await ctx.db.patch(id, data);
+  },
+});
+export const markStudentAsPaid = mutation({
+  args: { id: v.id("students") },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, {
+      lastPaidDate: Date.now(),
+    });
   },
 });
 export const deleteStudent = mutation({
@@ -138,7 +150,6 @@ export const getSchedule = query({
   args: { ownerId: v.union(v.id("students"), v.id("tutors"), v.literal("skip")) },
   handler: async (ctx, args) => {
     if (args.ownerId === "skip") return [];
-    // Explicit type narrowing for ownerId since v.id tables are multiple
     return await ctx.db
       .query("schedules")
       .withIndex("by_owner", (q) => q.eq("ownerId", args.ownerId as Id<"students"> | Id<"tutors">))

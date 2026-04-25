@@ -4,26 +4,23 @@ import { api } from '@convex/_generated/api';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { DollarSign, CheckCircle, ArrowLeft, Printer, AlertTriangle } from "lucide-react";
-import { format } from "date-fns";
+import { format, addDays, isBefore } from "date-fns";
 import { toast } from "sonner";
 import { Link } from 'react-router-dom';
-import { calculateNextDue, isOverdue } from '@/lib/utils';
-import { Id } from '@convex/_generated/dataModel';
 export function PaymentsDuesPage() {
-  const studentsRaw = useQuery(api.pyrox.getStudents);
+  const students = useQuery(api.pyrox.getStudents) ?? [];
   const markAsPaid = useMutation(api.pyrox.markStudentAsPaid);
+  const calculateNextDue = (lastPaid: number, interval: "weekly" | "monthly") => {
+    return addDays(new Date(lastPaid), interval === "weekly" ? 7 : 30).getTime();
+  };
   const studentsWithDueDates = useMemo(() => {
-    const students = studentsRaw ?? [];
-    return students.map(s => {
-      const nextDueDate = calculateNextDue(s.lastPaidDate, s.paymentInterval, s.createdAt);
-      return {
-        ...s,
-        nextDueDate,
-        isOverdue: isOverdue(nextDueDate),
-      };
-    }).sort((a, b) => a.nextDueDate - b.nextDueDate);
-  }, [studentsRaw]);
-  const handleProcessPayment = async (id: Id<"students">) => {
+    return students.map(s => ({
+      ...s,
+      nextDueDate: calculateNextDue(s.lastPaidDate, s.paymentInterval),
+      isOverdue: calculateNextDue(s.lastPaidDate, s.paymentInterval) < Date.now(),
+    })).sort((a, b) => a.nextDueDate - b.nextDueDate);
+  }, [students]);
+  const handleProcessPayment = async (id: any) => {
     try {
       await markAsPaid({ id });
       toast.success("Transaction verified. Account updated.");
@@ -48,7 +45,7 @@ export function PaymentsDuesPage() {
               <DollarSign className="h-8 w-8 md:h-10 md:w-10 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-4xl font-bold text-white font-display tracking-tight text-glow-red uppercase leading-tight">Payments & Dues</h1>
+              <h1 className="text-3xl md:text-5xl font-bold text-white font-display tracking-tight text-glow-red uppercase leading-tight">Payments & Dues</h1>
               <p className="text-muted-foreground text-sm md:text-lg italic font-medium">Financial Monitoring Mainframe.</p>
             </div>
           </div>
@@ -75,8 +72,8 @@ export function PaymentsDuesPage() {
                   <TableRow><TableCell colSpan={5} className="text-center py-32 text-xl text-muted-foreground font-mono">No financial records detected.</TableCell></TableRow>
                 ) : (
                   studentsWithDueDates.map((student) => (
-                    <TableRow
-                      key={student._id}
+                    <TableRow 
+                      key={student._id} 
                       className={`h-24 transition-colors border-b border-white/5 group ${student.isOverdue ? "bg-primary/5 hover:bg-primary/10 border-primary/20" : "hover:bg-white/5"}`}
                     >
                       <TableCell className="px-8">
@@ -89,11 +86,11 @@ export function PaymentsDuesPage() {
                       </TableCell>
                       <TableCell>
                         <span className="px-3 py-1 rounded-full bg-secondary text-accent text-xs font-black uppercase tracking-tighter">
-                          {student.paymentInterval || "monthly"}
+                          {student.paymentInterval}
                         </span>
                       </TableCell>
                       <TableCell className="text-sm md:text-lg text-muted-foreground font-mono">
-                        {student.lastPaidDate ? format(student.lastPaidDate, "MMM dd, yyyy") : "No History"}
+                        {format(student.lastPaidDate, "MMM dd, yyyy")}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
@@ -104,8 +101,8 @@ export function PaymentsDuesPage() {
                         </div>
                       </TableCell>
                       <TableCell className="px-8 text-right print:hidden">
-                        <Button
-                          onClick={() => handleProcessPayment(student._id)}
+                        <Button 
+                          onClick={() => handleProcessPayment(student._id)} 
                           className={`h-12 px-6 font-bold uppercase transition-all rounded-xl ${student.isOverdue ? "bg-primary shadow-neon-red hover:scale-105" : "bg-accent text-background hover:bg-accent/80"}`}
                         >
                           <CheckCircle className="mr-2 h-5 w-5" /> Process

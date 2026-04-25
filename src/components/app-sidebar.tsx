@@ -1,5 +1,5 @@
 import React from "react";
-import { GraduationCap, Users, Calendar, LayoutDashboard, UserPlus, ClipboardList, Sparkles, BookOpen } from "lucide-react";
+import { GraduationCap, Users, Calendar, LayoutDashboard, UserPlus, ClipboardList, Sparkles, BookOpen, DollarSign } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { BrandLogo } from "@/components/BrandLogo";
 import {
@@ -20,6 +20,7 @@ const navItems = [
   { label: "Tutor Details", path: "/tutors/details", icon: ClipboardList, color: "text-primary" },
   { label: "Student Schedule", path: "/schedules/student", icon: Calendar, color: "text-accent" },
   { label: "Tutor Schedule", path: "/schedules/tutor", icon: BookOpen, color: "text-primary" },
+  { label: "Payments & Dues", path: "/payments/dues", icon: DollarSign, color: "text-primary" },
 ];
 export function AppSidebar(): JSX.Element {
   const { pathname } = useLocation();

@@ -3,16 +3,16 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '@convex/_generated/api';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Printer, Download, Database, Edit, Trash2, Check, ArrowLeft } from "lucide-react";
+import { Printer, Download, Database, Edit, Trash2, Check, ArrowLeft, CreditCard } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import Papa from "papaparse";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 import { toast } from "sonner";
-import { Id, Doc } from '@convex/_generated/dataModel';
+import { Doc } from '@convex/_generated/dataModel';
 import { Link } from 'react-router-dom';
 import { SUBJECT_LIST } from '@/lib/constants';
 export function StudentDetailsPage() {
@@ -22,6 +22,9 @@ export function StudentDetailsPage() {
   const [editingStudent, setEditingStudent] = useState<Doc<"students"> | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const calculateNextDue = (lastPaid: number, interval: "weekly" | "monthly") => {
+    return addDays(new Date(lastPaid), interval === "weekly" ? 7 : 30).getTime();
+  };
   const handleExport = () => {
     if (!students) return;
     const data = students.map(s => ({
@@ -29,6 +32,9 @@ export function StudentDetailsPage() {
       Location: s.location,
       Level: s.level,
       Subjects: s.subjects.join(", "),
+      "Last Paid": format(s.lastPaidDate, "yyyy-MM-dd"),
+      Interval: s.paymentInterval,
+      "Next Due": format(calculateNextDue(s.lastPaidDate, s.paymentInterval), "yyyy-MM-dd"),
       "Registered On": format(s.createdAt, "PPP")
     }));
     const csv = Papa.unparse(data);
@@ -52,6 +58,8 @@ export function StudentDetailsPage() {
         location: editingStudent.location,
         level: editingStudent.level,
         subjects: editingStudent.subjects,
+        lastPaidDate: editingStudent.lastPaidDate,
+        paymentInterval: editingStudent.paymentInterval,
       });
       toast.success("Registry updated.");
       setEditDialogOpen(false);
@@ -94,13 +102,13 @@ export function StudentDetailsPage() {
         </header>
         <div className="glass-metallic neon-border-red rounded-3xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto w-full">
-            <Table className="min-w-[800px]">
+            <Table className="min-w-[1000px]">
               <TableHeader className="bg-secondary/60 border-b border-white/10">
                 <TableRow className="h-20 hover:bg-transparent">
                   <TableHead className="text-sm md:text-xl font-bold text-white px-8 uppercase tracking-widest">Name</TableHead>
-                  <TableHead className="text-sm md:text-xl font-bold text-white uppercase tracking-widest">Location</TableHead>
                   <TableHead className="text-sm md:text-xl font-bold text-white uppercase tracking-widest">Tier</TableHead>
-                  <TableHead className="text-sm md:text-xl font-bold text-white uppercase tracking-widest">Modules</TableHead>
+                  <TableHead className="text-sm md:text-xl font-bold text-white uppercase tracking-widest">Last Paid</TableHead>
+                  <TableHead className="text-sm md:text-xl font-bold text-white uppercase tracking-widest">Next Due</TableHead>
                   <TableHead className="text-sm md:text-xl font-bold text-white text-right px-8 print:hidden uppercase tracking-widest">Control</TableHead>
                 </TableRow>
               </TableHeader>
@@ -110,56 +118,64 @@ export function StudentDetailsPage() {
                 ) : students.length === 0 ? (
                   <TableRow><TableCell colSpan={5} className="text-center py-32 text-xl text-muted-foreground italic font-mono">Empty database link.</TableCell></TableRow>
                 ) : (
-                  students.map((student) => (
-                    <TableRow key={student._id} className="h-24 hover:bg-white/5 transition-colors border-b border-white/5 group">
-                      <TableCell className="px-8">
-                        <span className="text-lg md:text-2xl font-bold text-white group-hover:text-accent transition-colors font-display tracking-tight">{student.name}</span>
-                      </TableCell>
-                      <TableCell className="text-sm md:text-lg text-muted-foreground font-medium">{student.location}</TableCell>
-                      <TableCell>
-                        <span className={`px-4 py-1.5 rounded-full text-xs font-bold shadow-lg ${
-                          student.level === 'A Level' ? 'bg-primary text-white shadow-neon-red' :
-                          student.level === 'IGCSE' ? 'bg-accent text-background shadow-neon-cyan' : 'bg-green-500 text-white'
-                        }`}>
-                          {student.level}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-sm md:text-lg text-muted-foreground max-w-md truncate font-medium">
-                        {student.subjects.join(" | ")}
-                      </TableCell>
-                      <TableCell className="px-8 text-right print:hidden">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => { setEditingStudent(student); setEditDialogOpen(true); }}
-                            className="h-10 w-10 md:h-12 md:w-12 rounded-xl text-accent hover:bg-accent/20"
-                          >
-                            <Edit className="h-5 w-5 md:h-6 md:w-6" />
-                          </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-xl text-primary hover:bg-primary/20">
-                                <Trash2 className="h-5 w-5 md:h-6 md:w-6" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent className="glass-metallic neon-border-red">
-                              <AlertDialogHeader>
-                                <AlertDialogTitle className="text-xl md:text-2xl font-bold text-white uppercase tracking-tighter">Expunge Record?</AlertDialogTitle>
-                                <AlertDialogDescription className="text-muted-foreground font-medium">
-                                  Permanent erasure from the mainframe.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel className="bg-secondary/50 border-white/10 text-white font-bold uppercase">Abort</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => deleteStudent({ id: student._id })} className="bg-primary text-white shadow-neon-red font-bold uppercase">Confirm</AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                  students.map((student) => {
+                    const nextDue = calculateNextDue(student.lastPaidDate, student.paymentInterval);
+                    const isOverdue = nextDue < Date.now();
+                    return (
+                      <TableRow key={student._id} className="h-24 hover:bg-white/5 transition-colors border-b border-white/5 group">
+                        <TableCell className="px-8">
+                          <span className="text-lg md:text-2xl font-bold text-white group-hover:text-accent transition-colors font-display tracking-tight uppercase">{student.name}</span>
+                        </TableCell>
+                        <TableCell>
+                          <span className={`px-4 py-1.5 rounded-full text-xs font-bold shadow-lg ${
+                            student.level === 'A Level' ? 'bg-primary text-white shadow-neon-red' :
+                            student.level === 'IGCSE' ? 'bg-accent text-background shadow-neon-cyan' : 'bg-green-500 text-white'
+                          }`}>
+                            {student.level}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-sm md:text-lg text-muted-foreground font-medium font-mono">
+                          {format(student.lastPaidDate, "MMM dd, yyyy")}
+                        </TableCell>
+                        <TableCell>
+                          <span className={isOverdue ? "text-primary font-black drop-shadow-neon-red" : "text-accent font-bold"}>
+                            {format(nextDue, "MMM dd, yyyy")}
+                          </span>
+                        </TableCell>
+                        <TableCell className="px-8 text-right print:hidden">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => { setEditingStudent(student); setEditDialogOpen(true); }}
+                              className="h-10 w-10 md:h-12 md:w-12 rounded-xl text-accent hover:bg-accent/20"
+                            >
+                              <Edit className="h-5 w-5 md:h-6 md:w-6" />
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-xl text-primary hover:bg-primary/20">
+                                  <Trash2 className="h-5 w-5 md:h-6 md:w-6" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent className="glass-metallic neon-border-red">
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle className="text-xl md:text-2xl font-bold text-white uppercase tracking-tighter">Expunge Record?</AlertDialogTitle>
+                                  <AlertDialogDescription className="text-muted-foreground font-medium italic">
+                                    Permanent erasure from the mainframe.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel className="bg-secondary/50 border-white/10 text-white font-bold uppercase">Abort</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => deleteStudent({ id: student._id })} className="bg-primary text-white shadow-neon-red font-bold uppercase">Confirm</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
                 )}
               </TableBody>
             </Table>
@@ -168,11 +184,11 @@ export function StudentDetailsPage() {
         <Dialog open={editDialogOpen} onOpenChange={(open) => { if (!open) setEditingStudent(null); setEditDialogOpen(open); }}>
           <DialogContent className="glass-metallic neon-border-cyan border-2 sm:max-w-[700px] p-6 md:p-8 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-2xl md:text-3xl font-bold text-white mb-6 uppercase tracking-tighter">Modify Learner Profile</DialogTitle>
-              <DialogDescription className="text-muted-foreground font-medium text-lg">Modify profile for {editingStudent?.name}</DialogDescription>
+              <DialogTitle className="text-2xl md:text-3xl font-bold text-white uppercase tracking-tighter leading-tight">Modify Learner Profile</DialogTitle>
+              <DialogDescription className="text-muted-foreground font-medium text-lg italic">Modify core and financial parameters for {editingStudent?.name}</DialogDescription>
             </DialogHeader>
             {editingStudent && (
-              <div className="space-y-6 md:space-y-8">
+              <div className="space-y-6 md:space-y-8 mt-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                   <div className="space-y-2">
                     <Label className="text-accent uppercase font-bold text-xs tracking-widest">Full Name</Label>
@@ -181,6 +197,33 @@ export function StudentDetailsPage() {
                   <div className="space-y-2">
                     <Label className="text-accent uppercase font-bold text-xs tracking-widest">Location</Label>
                     <Input value={editingStudent.location} onChange={(e) => setEditingStudent({...editingStudent, location: e.target.value})} className="h-12 md:h-14 bg-secondary/50 border-accent/20 font-bold" />
+                  </div>
+                </div>
+                <div className="bg-accent/5 p-6 rounded-2xl border border-accent/20 space-y-4">
+                   <Label className="text-xl font-bold text-accent uppercase tracking-widest text-xs flex items-center gap-2">
+                    <CreditCard className="h-4 w-4" /> Financial Configuration
+                  </Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] text-muted-foreground font-bold uppercase">Last Payment Date</Label>
+                      <Input 
+                        type="date" 
+                        value={new Date(editingStudent.lastPaidDate).toISOString().split('T')[0]} 
+                        onChange={(e) => setEditingStudent({...editingStudent, lastPaidDate: new Date(e.target.value).getTime()})} 
+                        className="h-12 bg-secondary/50 border-white/10 text-white font-bold" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] text-muted-foreground font-bold uppercase">Billing Interval</Label>
+                      <select 
+                        value={editingStudent.paymentInterval} 
+                        onChange={(e) => setEditingStudent({...editingStudent, paymentInterval: e.target.value as "weekly" | "monthly"})}
+                        className="h-12 w-full rounded-md border-white/10 bg-secondary/50 px-2 text-white font-bold"
+                      >
+                        <option value="monthly">Monthly</option>
+                        <option value="weekly">Weekly</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
                 <div className="space-y-4">
@@ -197,7 +240,7 @@ export function StudentDetailsPage() {
                             setEditingStudent({...editingStudent, subjects: next});
                           }}
                         />
-                        <span className="text-[10px] md:text-xs font-bold">{subj}</span>
+                        <span className="text-[10px] md:text-xs font-bold uppercase truncate">{subj}</span>
                       </div>
                     ))}
                   </div>
@@ -208,7 +251,7 @@ export function StudentDetailsPage() {
               <Button onClick={() => setEditDialogOpen(false)} variant="outline" className="h-14 px-8 border-white/10 font-bold uppercase flex-1" disabled={isUpdating}>Abort</Button>
               <Button onClick={handleEditSave} className="h-14 px-12 bg-accent text-background font-bold shadow-neon-cyan uppercase tracking-widest flex-1" disabled={isUpdating}>
                 {isUpdating ? <div className="h-5 w-5 animate-spin border-2 border-background border-t-transparent rounded-full mr-2" /> : <Check className="mr-2" />}
-                Commit
+                Commit Change
               </Button>
             </DialogFooter>
           </DialogContent>
