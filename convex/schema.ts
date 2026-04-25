@@ -32,6 +32,7 @@ export default defineSchema({
     studentName: v.optional(v.string()),
   })
     .index("by_owner", ["ownerId"])
+    .index("by_studentId", ["studentId"])
     .index("by_owner_day_time", ["ownerId", "day", "timeSlot"]),
   files: defineTable({
     userId: v.id("users"),

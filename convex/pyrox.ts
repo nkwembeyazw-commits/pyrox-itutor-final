@@ -69,10 +69,10 @@ export const deleteStudent = mutation({
         });
       }
     }
-    // 4. Remove schedule slots referencing this student (where the tutor is the owner)
+    // 4. Remove schedule slots referencing this student (using optimized index)
     const tutorSlotsReferencingStudent = await ctx.db
       .query("schedules")
-      .filter((q) => q.eq(q.field("studentId"), args.id))
+      .withIndex("by_studentId", (q) => q.eq("studentId", args.id))
       .collect();
     for (const ts of tutorSlotsReferencingStudent) {
        await ctx.db.delete(ts._id);

@@ -58,7 +58,10 @@ export default {
   		},
   		backgroundImage: {
   			'metallic-gradient': 'linear-gradient(135deg, #1e3a8a 0%, #0a0f2e 50%, #ff1744 100%)',
-  		}
+  		},
+      rotate: {
+        '360': '360deg',
+      }
   	}
   },
   plugins: [require("tailwindcss-animate")]

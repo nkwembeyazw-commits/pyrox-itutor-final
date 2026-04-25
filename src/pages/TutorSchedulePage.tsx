@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Users, Mail, Save, PlusCircle, Printer, Files, ArrowLeft } from "lucide-react";
 import { toast } from 'sonner';
-import { Id } from '@convex/_generated/dataModel';
+import { Id, Doc } from '@convex/_generated/dataModel';
 import { BrandLogo } from '@/components/BrandLogo';
 import { Link } from 'react-router-dom';
 function TutorScheduleReport({ tutorId, tutorName, mode }: { tutorId: Id<"tutors">, tutorName: string, mode: string }) {
@@ -74,7 +74,7 @@ export function TutorSchedulePage() {
     if (!selectedTutor || !students) return [];
     return students.filter(s => selectedTutor.studentIds?.includes(s._id));
   }, [selectedTutor, students]);
-  const handleCellClick = (day: string, time: string, existing?: any) => {
+  const handleCellClick = (day: string, time: string, existing?: Doc<"schedules">) => {
     if (!selectedTutorId) {
       toast.error("Select a tutor to schedule sessions.");
       return;

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Calendar, GraduationCap, Save, PlusCircle, Printer, Files, ArrowLeft } from "lucide-react";
 import { toast } from 'sonner';
-import { Id } from '@convex/_generated/dataModel';
+import { Id, Doc } from '@convex/_generated/dataModel';
 import { BrandLogo } from '@/components/BrandLogo';
 import { Link } from 'react-router-dom';
 function ScheduleReport({ studentId, studentName, level }: { studentId: Id<"students">, studentName: string, level: string }) {
@@ -67,7 +67,7 @@ export function StudentSchedulePage() {
       return () => clearTimeout(timer);
     }
   }, [isPrintingAll]);
-  const handleCellClick = (day: string, time: string, existing?: any) => {
+  const handleCellClick = (day: string, time: string, existing?: Doc<"schedules">) => {
     if (!selectedStudentId) {
       toast.error("Please select a student first.");
       return;

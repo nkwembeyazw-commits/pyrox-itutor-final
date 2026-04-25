@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { Link } from 'react-router-dom';
 import { calculateNextDue, isOverdue } from '@/lib/utils';
+import { Id } from '@convex/_generated/dataModel';
 export function PaymentsDuesPage() {
   const studentsRaw = useQuery(api.pyrox.getStudents);
   const markAsPaid = useMutation(api.pyrox.markStudentAsPaid);
@@ -22,7 +23,7 @@ export function PaymentsDuesPage() {
       };
     }).sort((a, b) => a.nextDueDate - b.nextDueDate);
   }, [studentsRaw]);
-  const handleProcessPayment = async (id: any) => {
+  const handleProcessPayment = async (id: Id<"students">) => {
     try {
       await markAsPaid({ id });
       toast.success("Transaction verified. Account updated.");

@@ -45,7 +45,7 @@ export function ScheduleGrid({ slots, onCellClick, accentColor = "cyan" }: Sched
               </td>
               {DAYS.map(day => {
                 const slot = getSlot(day, time);
-                const isMealBreak = time.includes("13:00") || time.includes("10:00");
+                const isMealBreak = time.startsWith("10:00") || time.startsWith("13:00");
                 return (
                   <td
                     key={`${day}-${time}`}
